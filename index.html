@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#00D9FF">
-    <title>ALEX:LAB — Neural Studio</title>
+    <title>ALEX:LAB — AI Studio</title>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -26,7 +26,6 @@
             --text-muted: #8e9aaf;
             
             --grad-main: linear-gradient(135deg, var(--cyan), var(--purple));
-            --grad-accent: linear-gradient(135deg, var(--purple), var(--pink));
             --font-main: 'Montserrat', sans-serif;
             --font-display: 'Unbounded', sans-serif;
         }
@@ -41,7 +40,7 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* === НЕЙРОННЫЙ ФОН === */
+        /* Фон */
         #neural-canvas {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; pointer-events: none; opacity: 0.5;
@@ -65,7 +64,7 @@
             border-radius: 50%; padding: 3px;
             background: var(--grad-main);
             box-shadow: 0 0 25px rgba(0, 217, 255, 0.3);
-            margin-bottom: 10px; position: relative;
+            margin-bottom: 10px;
         }
         
         .logo-img {
@@ -80,8 +79,25 @@
             margin: 0;
         }
 
+        /* === СОЦСЕТИ (НОВОЕ) === */
+        .social-row {
+            display: flex; gap: 15px; margin-top: 10px; margin-bottom: 10px;
+        }
+        .social-link {
+            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; transition: 0.3s;
+        }
+        .social-link svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        /* Цвета при наведении */
+        .social-link.tt:hover { background: #000; border-color: #00f2ea; color: #00f2ea; box-shadow: 0 0 10px rgba(0, 242, 234, 0.5); }
+        .social-link.yt:hover { background: #FF0000; border-color: #FF0000; color: #fff; box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+        .social-link.tg:hover { background: #229ED9; border-color: #229ED9; color: #fff; box-shadow: 0 0 10px rgba(34, 158, 217, 0.5); }
+
         .energy-badge {
-            margin-top: 8px;
+            margin-top: 5px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 6px 14px; border-radius: 20px;
@@ -114,7 +130,6 @@
             border-radius: 24px; padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            flex: 1;
         }
 
         .tab-content { display: none; animation: fadeUp 0.4s ease; }
@@ -191,7 +206,16 @@
             font-weight: 700; text-transform: uppercase; font-size: 12px;
             box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4); transition: 0.3s;
         }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* === FOOTER (B2B) === */
+        .footer {
+            margin-top: auto; padding: 20px 0; text-align: center;
+        }
+        .b2b-link {
+            font-size: 10px; color: #555; text-decoration: none;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .b2b-link:hover { color: var(--cyan); }
 
         /* === БЛОКИРОВКА === */
         .limit-overlay {
@@ -207,13 +231,12 @@
             box-shadow: 0 0 25px rgba(34, 158, 217, 0.4); margin-top: 20px;
         }
 
-        /* === TOAST (УВЕДОМЛЕНИЕ) === */
+        /* === TOAST === */
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: rgba(20, 20, 25, 0.9); border: 1px solid var(--cyan);
             color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 12px;
             font-weight: 600; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s;
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
         #toast.show { opacity: 1; top: 30px; }
     </style>
@@ -221,7 +244,6 @@
 <body>
 
     <canvas id="neural-canvas"></canvas>
-
     <div id="toast">✅ Готово!</div>
 
     <div class="app-container">
@@ -231,6 +253,16 @@
                 <img src="avatar.png" alt="ALEX:LAB" class="logo-img">
             </div>
             <h1 class="brand-name">ALEX:LAB</h1>
+            
+            <div class="social-row">
+                <a href="https://tiktok.com/@ВАШ_НИК" target="_blank" class="social-link tt">
+                    <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
+                </a>
+                <a href="https://youtube.com/@ВАШ_НИК" target="_blank" class="social-link yt">
+                    <svg viewBox="0 0 24 24"><path d="M21.58 5.4a2.7 2.7 0 0 0-1.9-1.91C18 3.05 12 3.05 12 3.05s-6 0-7.68.45a2.7 2.7 0 0 0-1.9 1.9c-.46 1.69-.46 5.2-.46 5.2s0 3.52.46 5.2a2.7 2.7 0 0 0 1.9 1.9c1.68.45 7.68.45 7.68.45s6 0 7.68-.45a2.7 2.7 0 0 0 1.9-1.9c.46-1.68.46-5.2.46-5.2s0-3.51-.46-5.2zM10 13.66v-4.5l4.33 2.25L10 13.66z"/></svg>
+                </a>
+            </div>
+
             <div class="energy-badge">
                 <span>⚡ Заряд:</span>
                 <span id="credits-counter" style="color:var(--cyan)">5/5</span>
@@ -239,7 +271,7 @@
 
         <div class="tabs-container">
             <button id="btn-tab-art" class="tab-btn active" onclick="switchTab('art')">🎨 Генератор</button>
-            <button id="btn-tab-helper" class="tab-btn" onclick="switchTab('helper')">💡 Умный Помощник</button>
+            <button id="btn-tab-helper" class="tab-btn" onclick="switchTab('helper')">💡 Идеи</button>
         </div>
 
         <div class="main-card">
@@ -288,7 +320,7 @@
                 </div>
                 
                 <div style="margin-bottom: 25px;">
-                    <span class="input-label">В каком стиле? (10 вариантов)</span>
+                    <span class="input-label">В каком стиле?</span>
                     <select id="helper-style" class="modern-select">
                         <option value="cyberpunk">🤖 Киберпанк (Неон, Будущее)</option>
                         <option value="realism">📸 Фотореализм (Pro Портрет)</option>
@@ -298,20 +330,21 @@
                         <option value="fantasy">🗡️ Dark Fantasy (Магия, Мрак)</option>
                         <option value="oil">🎨 Картина Маслом (Классика)</option>
                         <option value="pixel">👾 Пиксель-Арт (Ретро игры)</option>
-                        <option value="architecture">📐 Архитектура (Интерьер)</option>
-                        <option value="mystic">🔮 Мистика (Таро, Эзотерика)</option>
                     </select>
                 </div>
 
                 <button onclick="buildPrompt()" class="gen-btn" style="background: transparent; border: 1px solid var(--cyan); color: var(--cyan);">
                     ✨ СОЗДАТЬ И ПЕРЕНЕСТИ
                 </button>
-                <p style="font-size:11px; color:#555; text-align:center; margin-top:10px;">
-                    Я создам профессиональный промпт и вставлю его в генератор
-                </p>
             </div>
-
         </div>
+
+        <div class="footer">
+            <a href="https://t.me/AlexRozhn" target="_blank" class="b2b-link">
+                Разработка ALEX:LAB | 🛠 Заказать такой сайт
+            </a>
+        </div>
+
     </div>
 
     <div id="limit-overlay" class="limit-overlay">
@@ -327,27 +360,20 @@
     </div>
 
 <script>
-    // === CONFIG ===
     const TG_BOT_LINK = "https://t.me/neiromagic_st_bot";
     const MAX_CREDITS = 5;
     const REWARD = 5;
 
-    // === INIT ===
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // === BACKGROUND ANIMATION ===
+    // === ФОН ===
     const canvas = document.getElementById('neural-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-
     class Particle {
         constructor() {
             this.x = Math.random() * canvas.width;
@@ -357,60 +383,37 @@
             this.size = Math.random() * 2;
         }
         update() {
-            this.x += this.vx;
-            this.y += this.vy;
-            if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            this.x += this.vx; this.y += this.vy;
+            if(this.x<0 || this.x>canvas.width) this.vx*=-1;
+            if(this.y<0 || this.y>canvas.height) this.vy*=-1;
         }
-        draw() {
-            ctx.fillStyle = '#00D9FF';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
+        draw() { ctx.fillStyle='#00D9FF'; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
     }
-
-    function initParticles() {
-        particles = [];
-        for(let i=0; i<35; i++) particles.push(new Particle());
-    }
-
+    function initParticles() { particles=[]; for(let i=0;i<35;i++) particles.push(new Particle()); }
     function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for(let i=0; i<particles.length; i++) {
-            particles[i].update();
-            particles[i].draw();
-            for(let j=i; j<particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 100) {
-                    ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist/100})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for(let i=0;i<particles.length;i++) {
+            particles[i].update(); particles[i].draw();
+            for(let j=i;j<particles.length;j++) {
+                const dx=particles[i].x-particles[j].x; const dy=particles[i].y-particles[j].y;
+                if(Math.sqrt(dx*dx+dy*dy)<100) {
+                    ctx.strokeStyle=`rgba(0,217,255,${1-Math.sqrt(dx*dx+dy*dy)/100})`;
+                    ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke();
                 }
             }
         }
         requestAnimationFrame(animate);
     }
-    initParticles();
-    animate();
+    initParticles(); animate();
 
-    // === STATE ===
+    // === ЛОГИКА ===
     function getCredits() {
         const dateKey = 'alex_date_' + new Date().getDate();
         if (localStorage.getItem('last_date_key') !== dateKey) {
-            localStorage.setItem('last_date_key', dateKey);
-            localStorage.setItem('alex_credits', MAX_CREDITS);
-            return MAX_CREDITS;
+            localStorage.setItem('last_date_key', dateKey); localStorage.setItem('alex_credits', MAX_CREDITS); return MAX_CREDITS;
         }
-        let c = parseInt(localStorage.getItem('alex_credits'));
-        return isNaN(c) ? MAX_CREDITS : c;
+        let c = parseInt(localStorage.getItem('alex_credits')); return isNaN(c) ? MAX_CREDITS : c;
     }
-
     function updateUI() {
         const credits = getCredits();
         const badge = document.getElementById('credits-counter');
@@ -418,127 +421,68 @@
         badge.style.color = credits > 2 ? "#00D9FF" : "#FF0055";
         document.getElementById('limit-overlay').style.display = credits <= 0 ? 'flex' : 'none';
     }
-
     function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
+        const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
     }
-
-    // === LOGIC ===
     function switchTab(t) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        
-        if (t === 'art') {
-            document.getElementById('btn-tab-art').classList.add('active');
-            document.getElementById('tab-art').classList.add('active');
-        } else {
-            document.getElementById('btn-tab-helper').classList.add('active');
-            document.getElementById('tab-helper').classList.add('active');
-        }
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+        if(t==='art'){document.getElementById('btn-tab-art').classList.add('active');document.getElementById('tab-art').classList.add('active');}
+        else{document.getElementById('btn-tab-helper').classList.add('active');document.getElementById('tab-helper').classList.add('active');}
         if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    // === PROMPT BUILDER (THE BRAIN) ===
     const STYLES_DB = {
-        "cyberpunk": "cyberpunk style, neon lights, futuristic city background, rain, high contrast, vibrant colors, ray tracing, 8k resolution, highly detailed",
-        "realism": "professional photography, shot on 85mm lens, f/1.8, sharp focus, hyperrealistic, 8k, highly detailed, dramatic lighting, skin texture",
-        "cinema": "cinematic shot, epic composition, color graded, teal and orange, blockbuster movie scene, volumetric lighting, 8k, widescreen",
-        "disney": "pixar style, 3d render, octane render, cute, colorful, soft lighting, highly detailed, disney animation style",
-        "anime": "anime style, studio ghibli, makoto shinkai, vivid colors, beautiful background, highly detailed, 4k",
-        "fantasy": "dark fantasy style, mystical atmosphere, fog, magic glowing, detailed armor, epic, gloomy, digital painting, artstation",
-        "oil": "oil painting, textured, impasto, masterpiece, traditional art, detailed brushstrokes",
-        "pixel": "pixel art, 16-bit, retro game style, dithering, detailed",
-        "architecture": "architectural photography, modern design, interior, natural light, clean lines, 8k, unreal engine 5",
-        "mystic": "mystical, tarot card style, gold details, smoke, esoteric symbols, magical, ethereal, highly detailed"
+        "cyberpunk": "cyberpunk style, neon lights, futuristic city background, rain, high contrast, 8k",
+        "realism": "professional photography, 85mm lens, sharp focus, hyperrealistic, 8k, dramatic lighting",
+        "cinema": "cinematic shot, epic composition, color graded, teal and orange, blockbuster scene, 8k",
+        "disney": "pixar style, 3d render, cute, colorful, soft lighting, disney animation style",
+        "anime": "anime style, studio ghibli, vivid colors, beautiful background, highly detailed",
+        "fantasy": "dark fantasy style, mystical atmosphere, fog, magic glowing, epic, gloomy, artstation",
+        "oil": "oil painting, textured, masterpiece, traditional art, detailed brushstrokes",
+        "pixel": "pixel art, 16-bit, retro game style, detailed"
     };
 
     function buildPrompt() {
         const idea = document.getElementById('helper-idea').value;
         const styleKey = document.getElementById('helper-style').value;
-        
-        if (!idea) {
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-            showToast("⚠️ Напиши хоть пару слов идеи!");
-            return;
-        }
-
-        // Магия создания промпта
-        const suffix = STYLES_DB[styleKey] || "";
-        const finalPrompt = `${idea}, ${suffix}, masterpiece, best quality`;
-
-        // Авто-перенос
-        document.getElementById('prompt-input').value = finalPrompt;
-        
+        if (!idea) { if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error'); showToast("⚠️ Напиши идею!"); return; }
+        document.getElementById('prompt-input').value = `${idea}, ${STYLES_DB[styleKey] || ""}, masterpiece, best quality`;
         if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        
-        // Переключаем вкладку и показываем уведомление
-        switchTab('art');
-        showToast("✅ Промпт создан и вставлен!");
+        switchTab('art'); showToast("✅ Промпт готов!");
     }
 
     async function generate() {
         const credits = getCredits();
         if (credits <= 0) return;
-
         const prompt = document.getElementById('prompt-input').value;
         const model = document.getElementById('model-select').value;
-        
-        if (!prompt) { 
-            alert("Поле пустое! Используй помощника или напиши текст."); 
-            return; 
-        }
+        if (!prompt) { alert("Поле пустое!"); return; }
 
-        // Списание
-        localStorage.setItem('alex_credits', credits - 1);
-        updateUI();
+        localStorage.setItem('alex_credits', credits - 1); updateUI();
         if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
         const btn = document.getElementById('gen-btn');
         const resArea = document.getElementById('result-area');
         const promo = document.getElementById('promo-box');
 
-        btn.disabled = true;
-        btn.innerText = "🔮 ГЕНЕРАЦИЯ...";
-        promo.style.display = 'none';
-        
-        // Лоадер
-        resArea.innerHTML = `
-            <div class="loading-container">
-                <div class="loader"></div>
-                <div class="loading-msg">
-                    Генерация может занять до 2 минут.<br>
-                    Пожалуйста, подожди, магия требует времени... ✨
-                </div>
-            </div>
-        `;
+        btn.disabled = true; btn.innerText = "🔮 ГЕНЕРАЦИЯ..."; promo.style.display = 'none';
+        resArea.innerHTML = `<div class="loading-container"><div class="loader"></div><div class="loading-msg">Генерация может занять до 2 минут...</div></div>`;
 
         const seed = Math.floor(Math.random() * 1000000);
         const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=${model}&width=1024&height=1024&seed=${seed}&nologo=true`;
 
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.className = "generated-img";
-        img.src = url;
-
+        const img = new Image(); img.crossOrigin = "Anonymous"; img.className = "generated-img"; img.src = url;
         img.onload = () => {
-            resArea.innerHTML = '';
-            resArea.appendChild(img);
-            btn.disabled = false;
-            btn.innerText = "🚀 ЗАПУСТИТЬ МАГИЮ";
-            promo.style.display = 'block';
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            resArea.innerHTML = ''; resArea.appendChild(img);
+            btn.disabled = false; btn.innerText = "🚀 ЗАПУСТИТЬ МАГИЮ";
+            promo.style.display = 'block'; if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             promo.scrollIntoView({behavior: "smooth"});
         };
-
         img.onerror = () => {
             resArea.innerHTML = '<div style="color:#FF0055; padding:20px;">Ошибка. Попробуй модель Turbo.</div>';
-            btn.disabled = false;
-            btn.innerText = "ПОВТОРИТЬ";
-            localStorage.setItem('alex_credits', credits);
-            updateUI();
+            btn.disabled = false; btn.innerText = "ПОВТОРИТЬ";
+            localStorage.setItem('alex_credits', credits); updateUI();
         };
     }
 
@@ -547,14 +491,8 @@
         const shareText = "🔥 Нашел бесплатный генератор ALEX:LAB! Безлимит. Залетай:";
         const url = `https://t.me/share/url?url=${TG_BOT_LINK}&text=${encodeURIComponent(shareText)}`;
         tg.openTelegramLink(url);
-        
-        setTimeout(() => {
-            localStorage.setItem('alex_credits', MAX_CREDITS + REWARD);
-            updateUI();
-            alert("🔋 ЭНЕРГИЯ ВОССТАНОВЛЕНА! (+5)");
-        }, 8000);
+        setTimeout(() => { localStorage.setItem('alex_credits', MAX_CREDITS + REWARD); updateUI(); alert("🔋 ЭНЕРГИЯ ВОССТАНОВЛЕНА!"); }, 8000);
     }
-
     updateUI();
 </script>
 
