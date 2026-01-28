@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <title>ALEX:LAB — Neural Studio</title>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* ALEX:LAB Brand Colors (Extracted from Video) */
+            --brand-cyan: #00F0FF;
+            --brand-blue: #0066FF;
+            --brand-pink: #FF0055;
+            --brand-purple: #BC13FE;
+            
+            --bg-color: #030305; /* Deep Black */
+            --glass-bg: rgba(20, 20, 25, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #FFFFFF;
+            --text-muted: #8F9BB3;
+            
+            --gradient-logo: linear-gradient(90deg, var(--brand-cyan), var(--brand-blue), var(--brand-purple), var(--brand-pink));
+            --gradient-btn: linear-gradient(135deg, var(--brand-blue) 0%, var(--brand-purple) 50%, var(--brand-pink) 100%);
+            --glow-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* === LIVE NEURAL BACKGROUND === */
+        #neural-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; opacity: 0.6;
+        }
+        
+        .scanline {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 51%);
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 1; opacity: 0.2;
+        }
+
+        /* === CONTAINER === */
+        .app-container {
+            position: relative; z-index: 10;
+            width: 100%; max-width: 480px;
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 20px;
+            min-height: 100vh;
+        }
+
+        /* === HEADER & LOGO === */
+        .header {
+            text-align: center;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .logo-wrapper {
+            display: inline-block;
+            position: relative;
+        }
+
+        /* Glitch Effect Logo */
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: var(--gradient-logo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.3));
+            position: relative;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            background: var(--gradient-logo);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 5px;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: var(--brand-cyan);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-top: 5px;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        /* === ENERGY BAR === */
+        .energy-bar-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            margin-bottom: 10px;
+        }
+
+        .energy-info { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #fff; }
+        .energy-dots { display: flex; gap: 4px; }
+        .dot { width: 6px; height: 12px; background: #333; border-radius: 2px; transform: skewX(-20deg); transition: 0.3s; }
+        .dot.active { background: var(--brand-cyan); box-shadow: 0 0 8px var(--brand-cyan); }
+        .dot.empty { background: rgba(255, 0, 85, 0.5); }
+
+        /* === GLASS CARDS === */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s;
+        }
+
+        /* === TABS === */
+        .tabs {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+            background: rgba(0,0,0,0.3); padding: 5px; border-radius: 16px;
+        }
+        .tab-btn {
+            background: transparent; border: none; color: var(--text-muted);
+            padding: 12px; font-weight: 700; font-family: 'Orbitron', sans-serif; font-size: 11px;
+            text-transform: uppercase; border-radius: 12px; transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: rgba(255,255,255,0.1); color: #fff;
+            box-shadow: inset 0 0 0 1px var(--brand-blue);
+            text-shadow: 0 0 10px var(--brand-blue);
+        }
+
+        /* === INPUTS === */
+        .input-group { margin-bottom: 15px; position: relative; }
+        .label-text {
+            font-size: 10px; color: var(--brand-cyan); text-transform: uppercase; font-weight: 700;
+            margin-bottom: 8px; display: block; letter-spacing: 1px;
+        }
+        
+        select, textarea, input {
+            width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; padding: 14px; border-radius: 14px; font-family: 'Outfit', sans-serif; font-size: 14px;
+            outline: none; transition: 0.3s;
+        }
+        select:focus, textarea:focus, input:focus {
+            border-color: var(--brand-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        }
+
+        /* === GENERATE BUTTON === */
+        .gen-btn {
+            width: 100%; border: none; padding: 18px; border-radius: 16px;
+            background: var(--gradient-btn);
+            color: #fff; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 14px;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 102, 255, 0.4);
+            position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .gen-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        .gen-btn:hover::before { left: 100%; }
+        .gen-btn:active { transform: scale(0.97); }
+        .gen-btn:disabled { background: #333; color: #777; box-shadow: none; cursor: not-allowed; }
+
+        /* === IMAGE RESULT === */
+        #result-area {
+            min-height: 300px; display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);
+            margin-top: 15px; overflow: hidden; position: relative;
+        }
+        .generated-img { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 0 30px rgba(0,0,0,0.5); animation: fadeIn 0.5s; }
+        
+        /* === LOADER (HACKER STYLE) === */
+        .loader-container { text-align: center; }
+        .loader-glitch {
+            font-family: 'JetBrains Mono', monospace; color: var(--brand-cyan);
+            font-size: 12px; margin-bottom: 10px;
+        }
+        .progress-bar { width: 150px; height: 2px; background: #333; margin: 0 auto; border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--brand-cyan); width: 0%; animation: progress 3s linear infinite; }
+        @keyframes progress { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+
+        /* === PROMO BOX (THE HOOK) === */
+        .promo-box {
+            display: none;
+            margin-top: 15px;
+            background: linear-gradient(180deg, rgba(255, 0, 85, 0.1) 0%, rgba(0,0,0,0) 100%);
+            border: 1px solid var(--brand-pink);
+            border-radius: 16px; padding: 20px; text-align: center;
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .promo-title { color: #fff; font-weight: 700; margin-bottom: 5px; }
+        .promo-desc { font-size: 12px; color: #aaa; margin-bottom: 15px; }
+        .promo-btn {
+            display: inline-block; padding: 12px 25px;
+            background: var(--brand-pink); color: #fff;
+            text-decoration: none; border-radius: 30px;
+            font-weight: 700; text-transform: uppercase; font-size: 12px;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+            animation: pulseBtn 2s infinite;
+        }
+
+        /* === LIMIT OVERLAY (VIRAL) === */
+        .limit-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); padding: 30px; text-align: center;
+        }
+        .battery-icon { font-size: 60px; margin-bottom: 20px; filter: grayscale(1); animation: shake 0.5s infinite; }
+        .share-btn {
+            background: #229ED9; color: white; padding: 16px 30px; border-radius: 30px;
+            text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 14px;
+            display: flex; align-items: center; gap: 10px; border: none; cursor: pointer;
+            box-shadow: 0 0 25px rgba(34, 158, 217, 0.4);
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+    </style>
+</head>
+<body>
+
+    <canvas id="neural-canvas"></canvas>
+    <div class="scanline"></div>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="logo-wrapper">
+                <div class="brand-logo"><span class="logo-icon">⚡</span>ALEX:LAB</div>
+            </div>
+            <div class="subtitle">Neural Magic Studio</div>
+        </div>
+
+        <div class="energy-bar-container">
+            <div class="energy-info">
+                <span>БАТАРЕЯ</span>
+                <span id="credits-text" style="color:var(--brand-cyan)">5/5</span>
+            </div>
+            <div class="energy-dots" id="energy-dots">
+                <div class="dot active"></div><div class="dot active"></div><div class="dot active"></div><div class="dot active"></div><div class="dot active"></div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('gen')">🎨 Creator</button>
+                <button class="tab-btn" onclick="switchTab('helper')">🧠 Ideas</button>
+            </div>
+
+            <div id="tab-gen" class="tab-content active" style="margin-top: 20px;">
+                <div class="input-group">
+                    <span class="label-text">Модель</span>
+                    <select id="model-select">
+                        <option value="flux-realism">📸 Photo Realism (Pro)</option>
+                        <option value="flux">🚀 Flux Base (Balanced)</option>
+                        <option value="flux-3d">🧊 3D Disney Style</option>
+                        <option value="turbo">⚡ Turbo (Fastest)</option>
+                        <option value="midjourney">🌌 Midjourney V6 Style</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <span class="label-text">Промпт</span>
+                    <textarea id="prompt-input" rows="3" placeholder="Опиши свою идею..."></textarea>
+                </div>
+
+                <button id="generate-btn" onclick="generate()" class="gen-btn">ЗАПУСТИТЬ СЕТЬ</button>
+
+                <div id="result-area">
+                    <div style="text-align:center; color: #555; font-size:12px;">
+                        <span style="font-size:24px; display:block; margin-bottom:10px;">👾</span>
+                        Ожидание данных...
+                    </div>
+                </div>
+
+                <div id="promo-box" class="promo-box">
+                    <div class="promo-title">Это фото можно оживить! 🔥</div>
+                    <div class="promo-desc">Создай видео-анимацию из этой картинки за 1 клик с помощью нашего урока.</div>
+                    <a href="https://taplink.cc/alexlab" target="_blank" class="promo-btn">🎬 СМОТРЕТЬ УРОК</a>
+                </div>
+            </div>
+
+            <div id="tab-helper" class="tab-content" style="margin-top: 20px;">
+                <div class="input-group">
+                    <span class="label-text">Базовая идея</span>
+                    <input type="text" id="helper-idea" placeholder="Кот в космосе...">
+                </div>
+                <div class="input-group">
+                    <span class="label-text">Стиль</span>
+                    <select id="helper-style">
+                        <option value="Cyberpunk, neon lights, futuristic city">🤖 Киберпанк</option>
+                        <option value="Cinematic shot, 8k, detailed, dramatic lighting">🎥 Кино</option>
+                        <option value="Anime style, studio ghibli, vivid colors">⛩️ Аниме</option>
+                    </select>
+                </div>
+                <button onclick="buildPrompt()" class="gen-btn" style="background: #333;">СКОПИРОВАТЬ</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="limit-overlay" class="limit-overlay">
+        <div class="battery-icon">🪫</div>
+        <h2 style="font-family:'Orbitron'; text-transform:uppercase; margin-bottom:10px;">System Offline</h2>
+        <p style="color:#aaa; margin-bottom:30px; font-size:14px;">Энергия исчерпана.<br>Для перезагрузки системы поделись доступом.</p>
+        <button onclick="shareToUnlock()" class="share-btn">
+            ✈️ ПОДЕЛИТЬСЯ (+5 ЗАРЯДОВ)
+        </button>
+    </div>
+
+<script>
+    // === CONFIG ===
+    const TG_BOT_LINK = "https://t.me/neiromagic_st_bot"; 
+    const MAX_CREDITS = 5;
+    const REWARD = 5;
+
+    // === TELEGRAM INIT ===
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.enableClosingConfirmation();
+
+    // === NEURAL BACKGROUND ANIMATION ===
+    const canvas = document.getElementById('neural-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.size = Math.random() * 2;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        }
+        draw() {
+            ctx.fillStyle = '#00F0FF';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        particles = [];
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+            // Connect lines
+            for (let j = i; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 100) {
+                    ctx.strokeStyle = `rgba(0, 240, 255, ${1 - dist/100})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    initParticles();
+    animate();
+
+    // === LOGIC ===
+    function getCredits() {
+        let c = parseInt(localStorage.getItem('alex_credits'));
+        if (isNaN(c)) c = MAX_CREDITS;
+        return c;
+    }
+
+    function updateUI() {
+        const credits = getCredits();
+        document.getElementById('credits-text').innerText = `${credits}/${MAX_CREDITS}`;
+        
+        // Update dots
+        const dotsContainer = document.getElementById('energy-dots');
+        dotsContainer.innerHTML = '';
+        for(let i=0; i<MAX_CREDITS; i++) {
+            const d = document.createElement('div');
+            d.className = `dot ${i < credits ? 'active' : 'empty'}`;
+            dotsContainer.appendChild(d);
+        }
+
+        if (credits <= 0) {
+            document.getElementById('limit-overlay').style.display = 'flex';
+        } else {
+            document.getElementById('limit-overlay').style.display = 'none';
+        }
+    }
+
+    function switchTab(t) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(`tab-${t}`).classList.add('active');
+        // Haptic
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    async function generate() {
+        const credits = getCredits();
+        if (credits <= 0) return;
+
+        const prompt = document.getElementById('prompt-input').value;
+        const model = document.getElementById('model-select').value;
+        if (!prompt) { 
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            alert("Введите промпт!"); 
+            return; 
+        }
+
+        // UI Updates
+        localStorage.setItem('alex_credits', credits - 1);
+        updateUI();
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+
+        const btn = document.getElementById('generate-btn');
+        const resArea = document.getElementById('result-area');
+        const promo = document.getElementById('promo-box');
+
+        btn.disabled = true;
+        btn.innerText = "PROCESSING...";
+        promo.style.display = 'none';
+        
+        // Hacker Loader
+        resArea.innerHTML = `
+            <div class="loader-container">
+                <div class="loader-glitch">INITIALIZING NEURAL LINK...</div>
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+            </div>
+        `;
+
+        // API Call
+        const seed = Math.floor(Math.random() * 1000000);
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=${model}&width=1024&height=1024&seed=${seed}&nologo=true`;
+
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.className = "generated-img";
+        img.src = url;
+
+        img.onload = () => {
+            resArea.innerHTML = '';
+            resArea.appendChild(img);
+            btn.disabled = false;
+            btn.innerText = "ЗАПУСТИТЬ СЕТЬ";
+            promo.style.display = 'block';
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            // Scroll to promo
+            promo.scrollIntoView({behavior: "smooth"});
+        };
+
+        img.onerror = () => {
+            resArea.innerHTML = '<div style="color:red">Ошибка соединения с сервером.</div>';
+            btn.disabled = false;
+            btn.innerText = "ПОВТОРИТЬ";
+            localStorage.setItem('alex_credits', credits); // Refund
+            updateUI();
+        };
+    }
+
+    function buildPrompt() {
+        const idea = document.getElementById('helper-idea').value;
+        const style = document.getElementById('helper-style').value;
+        const final = `${idea}, ${style}, masterpiece, best quality, 8k`;
+        navigator.clipboard.writeText(final);
+        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        alert("Скопировано! Вставь в генератор.");
+        switchTab('gen');
+    }
+
+    function shareToUnlock() {
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        
+        const shareText = "🚀 Взломал нейросеть ALEX:LAB! Тут безлимитная генерация картинок. Залетай пока работает:";
+        const url = `https://t.me/share/url?url=${TG_BOT_LINK}&text=${encodeURIComponent(shareText)}`;
+        
+        tg.openTelegramLink(url);
+        
+        // Viral Loop Logic (Timeout Trick)
+        setTimeout(() => {
+            localStorage.setItem('alex_credits', MAX_CREDITS + REWARD);
+            updateUI();
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            alert("🔋 ЭНЕРГИЯ ВОССТАНОВЛЕНА!");
+        }, 10000); // 10 sec delay for realism
+    }
+
+    updateUI();
+</script>
+
+</body>
+</html>
