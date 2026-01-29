@@ -60,7 +60,7 @@ function showToast(m) {
     if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success');
 }
 
-// === 3. ЧАТ С ФАУНДЕРОМ (УМНАЯ ВЕРСИЯ 9.1) ===
+// === 3. ЧАТ С АЛЕКСОМ (ПОЛНАЯ ЛОГИКА) ===
 let userName = localStorage.getItem('user_name') || "";
 let userGender = localStorage.getItem('user_gender') || "unknown";
 const chatBox = document.getElementById('chat-box');
@@ -74,28 +74,24 @@ if(!userName) {
 
 async function sendChat() {
     const inp = document.getElementById('chat-input'); 
-    const txt = inp.value.trim(); 
-    if(!txt) return;
+    const txt = inp.value.trim(); if(!txt) return;
     
-    // Показываем сообщение юзера
-    chatBox.innerHTML += `<div class="msg user">${txt}</div>`; 
-    chatBox.scrollTop = chatBox.scrollHeight; 
-    inp.value = '';
+    // Юзер пишет
+    chatBox.innerHTML += `<div class="msg user">${txt}</div>`; chatBox.scrollTop = chatBox.scrollHeight; inp.value = '';
 
-    // ЛОГИКА РЕГИСТРАЦИИ (Если нет имени)
+    // ЗНАКОМСТВО (ЕСЛИ НЕТ ИМЕНИ)
     if (!userName) {
-        userName = txt; 
-        localStorage.setItem('user_name', userName);
+        userName = txt; localStorage.setItem('user_name', userName);
         
-        // Определяем пол (простая эвристика)
+        // Определяем пол
         const last = userName.toLowerCase().slice(-1);
         userGender = (['а', 'я', 'и'].includes(last)) ? "female" : "male";
         localStorage.setItem('user_gender', userGender);
         
         const welcome = userGender === "female" 
-            ? `Приятно, ${userName}! ✨ С такой леди мы натворим красоты. Спрашивай что угодно!` 
-            : `Принято, ${userName}! 🤝 Рад знакомству, бро. Ну что, погнали креативить?`;
-        
+            ? `Приятно, ${userName}! ✨ С такой леди мы натворим красоты.` 
+            : `Принято, ${userName}! 🤝 Рад знакомству, бро.`;
+            
         setTimeout(() => { 
             chatBox.innerHTML += `<div class="msg-row"><img src="founder.jpg" class="alex-avatar"><div class="msg alex">${welcome}</div></div>`; 
             chatBox.scrollTop = chatBox.scrollHeight; 
@@ -105,17 +101,17 @@ async function sendChat() {
 
     // ОБЫЧНЫЙ ДИАЛОГ
     const loadID = 'l-' + Date.now();
-    chatBox.innerHTML += `<div class="msg-row" id="${loadID}"><img src="founder.jpg" class="alex-avatar"><div class="msg alex"><div class="loader" style="width:20px;height:20px;border-width:2px;"></div></div></div>`;
+    chatBox.innerHTML += `<div class="msg-row" id="${loadID}"><img src="founder.jpg" class="alex-avatar"><div class="msg alex"><div class="loader" style="width:20px;height:20px;border-width:2px;"></div></div></div>`; 
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Промпт личности
+    // Формируем характер
     const personality = userGender === "female" 
-        ? `Общайся с девушкой по имени ${userName}. Будь галантным, делай комплименты, используй эмодзи.` 
-        : `Общайся с парнем по имени ${userName}. Будь как бро, используй сленг, будь дерзким экспертом.`;
+        ? `Общайся с девушкой по имени ${userName}. Будь галантным, делай комплименты, но дерзким.` 
+        : `Общайся с парнем по имени ${userName}. Будь как бро, используй сленг.`;
     
     const sys = {
         role:"system", 
-        content:`Ты Алекс, основатель ALEX:LAB. ${personality} Твоя цель: помогать с нейросетями. Если спрашивают обучение - давай ссылку: https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21. Если хотят такой сайт - предлагай услугу за 14990р. Не пиши длинные тексты.`
+        content:`Ты Алекс, основатель ALEX:LAB. ${personality} Твоя цель: помогать с нейросетями. Предлагай курс: https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21. Если хотят такой же сайт - предлагай услугу под ключ за 14990р.`
     };
 
     try {
@@ -133,27 +129,25 @@ async function sendChat() {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// === 4. ПОМОЩНИК (СМАРТ ПРОМПТЫ) ===
-const styles = {
-    cyberpunk: "cyberpunk style, neon lights, rainy futuristic city, 8k, ray tracing",
-    realism: "professional photography, 85mm lens, hyperrealistic, sharp focus, skin texture",
-    cinema: "cinematic composition, dramatic lighting, block buster style, teal and orange, 8k",
-    disney: "pixar 3d render style, cute, soft light, vibrant colors, octane render",
-    anime: "studio ghibli style, vivid colors, hand drawn feel, detailed background",
-    fantasy: "dark fantasy, magic, glowing, epic, gloomy, artstation, detailed armor",
-    oil: "oil painting, textured, masterpiece, traditional art",
-    pixel: "pixel art, 16-bit, retro game style",
-    architecture: "modern architecture, interior design, unreal engine 5, 8k",
-    mystic: "mystical, tarot card style, gold details, smoke, esoteric"
+// === 4. ПОМОЩНИК (УМНЫЕ ПРОМПТЫ) ===
+const styles = { 
+    cyberpunk: "cyberpunk style, neon lights, 8k, ray tracing", 
+    realism: "professional photo, 85mm, hyperrealistic, skin texture", 
+    cinema: "cinematic shot, epic light, teal and orange, blockbuster", 
+    disney: "pixar 3d render, cute, soft light, vibrant colors", 
+    anime: "studio ghibli style, detailed background", 
+    fantasy: "dark fantasy, magic, glowing, epic, gloomy", 
+    oil: "oil painting, textured, masterpiece", 
+    pixel: "pixel art, 16-bit, retro game style", 
+    architecture: "modern architecture, unreal engine 5", 
+    mystic: "mystical, tarot style, gold details" 
 };
 
 function buildPrompt() {
     const id = document.getElementById('helper-idea').value;
     const st = document.getElementById('helper-style').value;
     if(!id) return showToast("⚠️ Напиши идею!");
-    
-    // Склейка и перенос
-    document.getElementById('prompt-input').value = `${id}, ${styles[st]}, masterpiece, best quality`;
+    document.getElementById('prompt-input').value = `${id}, ${styles[st]}, masterpiece`;
     showToast("✅ Промпт перенесен!"); 
     switchTab('art');
 }
@@ -171,24 +165,20 @@ async function generate() {
     const btn = document.getElementById('gen-btn'); 
     const res = document.getElementById('result-area');
     
-    btn.disabled = true; 
-    btn.innerText = "🔮 МАГИЯ..."; 
+    btn.disabled = true; btn.innerText = "🔮 МАГИЯ..."; 
     res.innerHTML = '<div style="text-align:center"><div class="loader"></div><div style="font-size:10px;margin-top:10px;color:#00D9FF">Рисуем...</div></div>';
     document.getElementById('promo-box').style.display='none';
 
-    const s = Math.floor(Math.random()*1e6);
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(pr)}?model=${document.getElementById('model-select').value}&width=1024&height=1024&nologo=true&seed=${s}`;
-
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(pr)}?model=${document.getElementById('model-select').value}&width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*1e6)}`;
+    
     const img = new Image(); 
     img.src = url; 
     img.className='generated-img'; 
     img.crossOrigin="Anonymous";
     
     img.onload = () => { 
-        res.innerHTML=''; 
-        res.appendChild(img); 
-        btn.disabled=false; 
-        btn.innerText="ЕЩЕ РАЗ"; 
+        res.innerHTML=''; res.appendChild(img); 
+        btn.disabled=false; btn.innerText="ЕЩЕ РАЗ"; 
         document.getElementById('promo-box').style.display='block'; 
         if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success'); 
         document.getElementById('promo-box').scrollIntoView({behavior:"smooth"});
@@ -205,12 +195,7 @@ async function generate() {
 // === 6. ВИРАЛЬНОСТЬ ===
 function share() { 
     tg.openTelegramLink(`https://t.me/share/url?url=${TG_BOT_LINK}&text=Зацени этот бесплатный AI генератор!`); 
-    setTimeout(() => { 
-        localStorage.setItem('alex_credits', 10); 
-        updateUI(); 
-        alert("🔋 +5 ЗАРЯДОВ!"); 
-    }, 5000); 
+    setTimeout(() => { localStorage.setItem('alex_credits', 10); updateUI(); alert("🔋 +5 ЗАРЯДОВ!"); }, 5000); 
 }
 
-// Старт
 updateUI();
