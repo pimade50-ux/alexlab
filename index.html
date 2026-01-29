@@ -4,534 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#00D9FF">
-    <title>ALEX:LAB — Nexus</title>
+    <title>ALEX:LAB — Nexus Ultimate</title>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Unbounded:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
-        :root {
-            --cyan: #00D9FF;
-            --purple: #B266FF;
-            --pink: #FF3399;
-            --dark-bg: #050505;
-            --card-bg: rgba(20, 20, 25, 0.8);
-            --text-main: #ffffff;
-            --grad-main: linear-gradient(135deg, var(--cyan), var(--purple));
-            --font-main: 'Montserrat', sans-serif;
-            --font-display: 'Unbounded', sans-serif;
-        }
-
-        body {
-            margin: 0; padding: 0;
-            background-color: var(--dark-bg);
-            font-family: var(--font-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden;
-        }
-
-        /* === ФОН (НЕЙРОСЕТЬ) === */
-        #neural-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; opacity: 0.4;
-        }
-
-        .app-container {
-            position: relative; z-index: 10;
-            width: 100%; max-width: 480px;
-            padding: 15px; display: flex; flex-direction: column; gap: 15px;
-        }
-
-        /* === ШАПКА === */
-        .header {
-            text-align: center; margin-top: 10px;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        .logo-wrapper {
-            width: 85px; height: 85px;
-            border-radius: 50%; padding: 3px;
-            background: var(--grad-main);
-            box-shadow: 0 0 25px rgba(0, 217, 255, 0.3);
-            margin-bottom: 10px;
-        }
-        
-        .logo-img {
-            width: 100%; height: 100%; border-radius: 50%;
-            object-fit: cover; background: #000; border: 3px solid #000;
-        }
-
-        .brand-name {
-            font-family: var(--font-display); font-weight: 800; font-size: 24px;
-            text-transform: uppercase; letter-spacing: 1px;
-            background: var(--grad-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin: 0;
-        }
-
-        .energy-badge {
-            margin-top: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 14px; border-radius: 20px;
-            font-size: 11px; font-weight: 600;
-            display: flex; align-items: center; gap: 6px;
-        }
-
-        /* === ВКЛАДКИ === */
-        .tabs-container {
-            background: #141418; padding: 5px; border-radius: 16px;
-            display: flex; gap: 5px; border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .tab-btn {
-            flex: 1; padding: 12px; border: none; background: transparent;
-            color: #8e9aaf; font-family: var(--font-display);
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            border-radius: 12px; cursor: pointer; transition: 0.3s;
-        }
-
-        .tab-btn.active {
-            background: rgba(255, 255, 255, 0.1); color: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* === КАРТОЧКА === */
-        .main-card {
-            background: var(--card-bg); backdrop-filter: blur(20px);
-            border-radius: 24px; padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            min-height: 400px;
-        }
-
-        .tab-content { display: none; animation: fadeUp 0.4s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* === INPUTS === */
-        .input-label {
-            display: block; font-size: 11px; color: var(--cyan); font-weight: 700;
-            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;
-        }
-
-        .modern-select, .modern-input {
-            width: 100%; padding: 16px;
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 14px; color: #fff; font-family: var(--font-main); font-size: 14px;
-            transition: 0.3s;
-        }
-        .modern-select:focus, .modern-input:focus { border-color: var(--cyan); }
-        .modern-input { min-height: 110px; resize: none; line-height: 1.5; }
-
-        /* === BUTTONS === */
-        .gen-btn {
-            width: 100%; margin-top: 15px; padding: 18px;
-            background: var(--grad-main); border: none; border-radius: 16px;
-            color: #000; font-family: var(--font-display); font-weight: 900;
-            font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
-            transition: 0.3s;
-        }
-        .gen-btn:active { transform: scale(0.98); }
-        .gen-btn:disabled { background: #333; color: #777; box-shadow: none; cursor: not-allowed; }
-        
-        /* Блик на кнопке */
-        .gen-btn::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: 0.5s;
-        }
-        .gen-btn:hover::after { left: 100%; }
-
-        /* === РЕЗУЛЬТАТ === */
-        #result-area {
-            margin-top: 20px; min-height: 300px;
-            background: rgba(0,0,0,0.4); border-radius: 16px;
-            border: 2px dashed rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-        }
-        .generated-img { width: 100%; height: auto; display: block; animation: zoomIn 0.5s; }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* Loader */
-        .loader {
-            width: 40px; height: 40px; border: 3px solid rgba(0, 217, 255, 0.2);
-            border-top-color: var(--cyan); border-radius: 50%;
-            animation: spin 1s linear infinite; margin: 0 auto 15px;
-        }
-        .loading-msg { font-size: 12px; color: var(--cyan); line-height: 1.6; text-align: center; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* === PROMO BOX === */
-        .promo-box {
-            display: none; margin-top: 20px;
-            background: linear-gradient(180deg, rgba(178, 102, 255, 0.1) 0%, rgba(0,0,0,0) 100%);
-            border: 1px solid var(--purple); border-radius: 16px; padding: 20px; text-align: center;
-        }
-        .promo-btn {
-            display: inline-block; width: 100%; padding: 14px;
-            background: linear-gradient(90deg, #FF0055, #FF5500);
-            color: #fff; text-decoration: none; border-radius: 12px;
-            font-weight: 700; text-transform: uppercase; font-size: 12px;
-            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4);
-        }
-
-        /* === TOAST (УВЕДОМЛЕНИЕ) === */
-        #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(20, 20, 25, 0.95); border: 1px solid var(--cyan);
-            color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 12px;
-            font-weight: 600; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s;
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        #toast.show { opacity: 1; top: 40px; }
-
-        /* === LIMIT OVERLAY === */
-        .limit-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.95); z-index: 999;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            padding: 30px; text-align: center; backdrop-filter: blur(10px);
-        }
-        .limit-btn {
-            background: #229ED9; color: #fff; border: none; padding: 16px 30px;
-            border-radius: 30px; font-weight: 700; text-transform: uppercase;
-            box-shadow: 0 0 25px rgba(34, 158, 217, 0.4); margin-top: 20px; cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <canvas id="neural-canvas"></canvas>
-
-    <div id="toast">✅ Промпт готов! Жми запуск</div>
+    <div id="toast">✅ Готово!</div>
 
     <div class="app-container">
         
-        <div class="header">
-            <div class="logo-wrapper">
-                <img src="avatar.png" alt="ALEX:LAB" class="logo-img">
-            </div>
+        <header class="header">
+            <div class="logo-wrapper"><img src="avatar.png" alt="ALEX:LAB" class="logo-img"></div>
             <h1 class="brand-name">ALEX:LAB</h1>
-            <div class="energy-badge">
-                <span>⚡ Заряд:</span>
-                <span id="credits-counter" style="color:var(--cyan)">5/5</span>
-            </div>
-        </div>
-
-        <div class="tabs-container">
-            <button id="btn-tab-art" class="tab-btn active" onclick="switchTab('art')">🎨 Генератор</button>
-            <button id="btn-tab-helper" class="tab-btn" onclick="switchTab('helper')">💡 Идеи</button>
-        </div>
-
-        <div class="main-card">
             
-            <div id="tab-art" class="tab-content active">
-                <div style="margin-bottom: 15px;">
-                    <span class="input-label">1. Выбери стиль</span>
-                    <select id="model-select" class="modern-select">
-                        <option value="flux">🦄 Flux (Универсальный)</option>
-                        <option value="flux-realism">📸 Realism (Фото-качество)</option>
-                        <option value="flux-3d">🧊 3D Disney (Мультики)</option>
-                        <option value="turbo">⚡ Turbo (Моментально)</option>
-                        <option value="midjourney">🌌 Midjourney (Арт)</option>
-                    </select>
+            <div class="social-row">
+                <a href="https://www.tiktok.com/@alex_aiq" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg></a>
+                <a href="https://www.youtube.com/@alexlab_ai" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M21.58 5.4a2.7 2.7 0 0 0-1.9-1.91C18 3.05 12 3.05 12 3.05s-6 0-7.68.45a2.7 2.7 0 0 0-1.9 1.9c-.46 1.69-.46 5.2-.46 5.2s0 3.52.46 5.2a2.7 2.7 0 0 0 1.9 1.9c1.68.45 7.68.45 7.68.45s6 0 7.68-.45a2.7 2.7 0 0 0 1.9-1.9c.46-1.68.46-5.2.46-5.2s0-3.51-.46-5.2zM10 13.66v-4.5l4.33 2.25L10 13.66z"/></svg></a>
+                <a href="https://taplink.cc/alexlab" target="_blank" class="social-link tap"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></a>
+            </div>
+            <div class="energy-badge">⚡ Заряд: <span id="credits-val">5/5</span></div>
+        </header>
+
+        <nav class="tabs-container">
+            <button id="tab-btn-art" class="tab-btn active" onclick="switchTab('art')"><span>🎨</span> Творить</button>
+            <button id="tab-btn-helper" class="tab-btn" onclick="switchTab('helper')"><span>💡</span> Идеи</button>
+            <button id="tab-btn-chat" class="tab-btn" onclick="switchTab('chat')"><span>💬</span> Alex AI</button>
+        </nav>
+
+        <main class="main-card">
+            <div id="pane-art" class="tab-content active">
+                <label class="input-label">Нейросеть</label>
+                <select id="model-select" class="modern-select">
+                    <option value="flux">🚀 Flux (Универсальная)</option>
+                    <option value="flux-realism">📸 Realism (Фото)</option>
+                    <option value="flux-3d">🧊 3D Disney</option>
+                    <option value="turbo">⚡ Turbo</option>
+                    <option value="midjourney">🌌 Midjourney</option>
+                </select>
+                <label class="input-label">Твой запрос</label>
+                <textarea id="prompt-input" class="modern-input" placeholder="Кот в костюме джедая..."></textarea>
+                <button id="gen-btn" onclick="generate()" class="gen-btn">ЗАПУСТИТЬ МАГИЮ</button>
+                
+                <div id="result-area"><div style="color:#666; font-size:12px;">Твой шедевр будет здесь...</div></div>
+                
+                <div id="promo-box" class="promo-box">
+                    <div style="font-size:14px; color:#fff; font-weight:700; margin-bottom:10px;">Хочешь оживить это фото? 🔥</div>
+                    <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Создай видео-анимацию за 1 клик</p>
+                    <a href="https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21" target="_blank" class="promo-btn">🎬 СМОТРЕТЬ УРОК</a>
                 </div>
+            </div>
 
-                <div style="margin-bottom: 5px;">
-                    <span class="input-label">2. Опиши идею</span>
-                    <textarea id="prompt-input" class="modern-input" placeholder="Например: Кот в костюме джедая..."></textarea>
-                </div>
+            <div id="pane-helper" class="tab-content">
+                <label class="input-label">Базовая идея</label>
+                <input type="text" id="helper-idea" class="modern-select" placeholder="Девушка под дождем...">
+                <label class="input-label">Стиль отрисовки</label>
+                <select id="helper-style" class="modern-select">
+                    <option value="cyberpunk">🤖 Киберпанк (Неон)</option>
+                    <option value="realism">📸 Фотореализм (Pro)</option>
+                    <option value="cinema">🎥 Эпичное Кино (4K)</option>
+                    <option value="disney">🧊 3D Мультик (Pixar)</option>
+                    <option value="anime">⛩️ Аниме (Ghibli)</option>
+                    <option value="fantasy">🗡️ Dark Fantasy (Магия)</option>
+                    <option value="oil">🎨 Картина Маслом</option>
+                    <option value="pixel">👾 Пиксель-Арт</option>
+                    <option value="architecture">📐 Архитектура</option>
+                    <option value="mystic">🔮 Мистика (Таро)</option>
+                </select>
+                <button onclick="buildPrompt()" class="gen-btn" style="background:transparent; border:1px solid var(--cyan); color:var(--cyan);">✨ СОЗДАТЬ И ПЕРЕНЕСТИ</button>
+            </div>
 
-                <button id="gen-btn" onclick="generate()" class="gen-btn">🚀 ЗАПУСТИТЬ МАГИЮ</button>
-
-                <div id="result-area">
-                    <div style="text-align:center; padding:20px; color:#666; font-size:13px;">
-                        Здесь появится твой шедевр.
+            <div id="pane-chat" class="tab-content">
+                <div class="chat-wrapper">
+                    <div id="chat-box" class="chat-history">
+                        </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" class="chat-msg-input" placeholder="Напиши мне..." onkeypress="if(event.key==='Enter')sendChat()">
+                        <button onclick="sendChat()" class="chat-send-btn">➤</button>
                     </div>
                 </div>
-
-                <div id="promo-box" class="promo-box">
-                    <h3 style="color:#fff; font-family:var(--font-display); font-size:14px; margin-bottom:5px;">
-                        Это фото можно оживить! 🔥
-                    </h3>
-                    <p style="font-size:12px; color:#ccc; margin-bottom:15px; line-height:1.4;">
-                        Создай видео-анимацию из этой картинки за 1 клик. Хочешь стать НейроМагом?
-                    </p>
-                    <a href="https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21" target="_blank" class="promo-btn">
-                        🎬 СМОТРЕТЬ УРОК И КУРС
-                    </a>
-                </div>
             </div>
+        </main>
 
-            <div id="tab-helper" class="tab-content">
-                <div style="margin-bottom: 20px;">
-                    <span class="input-label">Твоя идея (коротко)</span>
-                    <input type="text" id="helper-idea" class="modern-select" placeholder="Девушка под дождем..." style="padding:14px;">
-                </div>
-                
-                <div style="margin-bottom: 25px;">
-                    <span class="input-label">В каком стиле? (10+ вариантов)</span>
-                    <select id="helper-style" class="modern-select">
-                        <option value="cyberpunk">🤖 Киберпанк (Неон)</option>
-                        <option value="realism">📸 Фотореализм (Pro Портрет)</option>
-                        <option value="cinema">🎥 Эпичное Кино (Блокбастер)</option>
-                        <option value="disney">🧊 3D Мультик (Pixar)</option>
-                        <option value="anime">⛩️ Аниме (Ghibli)</option>
-                        <option value="fantasy">🗡️ Dark Fantasy (Магия)</option>
-                        <option value="oil">🎨 Картина Маслом (Классика)</option>
-                        <option value="pixel">👾 Пиксель-Арт (Ретро)</option>
-                        <option value="architecture">📐 Архитектура (Интерьер)</option>
-                        <option value="mystic">🔮 Мистика (Таро)</option>
-                    </select>
-                </div>
-
-                <button onclick="buildPrompt()" class="gen-btn" style="background: transparent; border: 1px solid var(--cyan); color: var(--cyan);">
-                    ✨ СОЗДАТЬ И ПЕРЕНЕСТИ
-                </button>
-                <p style="font-size:11px; color:#555; text-align:center; margin-top:10px;">
-                    Я создам профессиональный промпт и сам вставлю его в генератор
-                </p>
-            </div>
-
-        </div>
+        <footer class="footer">
+            <a href="https://telegra.ph/Kak-poluchat-lidov-za-kopejki-poka-konkurenty-slivayut-byudzhet-Tvoj-lichnyj-AI-magnit-01-29" target="_blank" class="b2b-btn">
+                🚀 Хочешь такой же сервис? Жми!
+            </a>
+        </footer>
     </div>
 
     <div id="limit-overlay" class="limit-overlay">
-        <div style="font-size:50px; margin-bottom:10px;">🪫</div>
-        <h2 style="font-family: var(--font-display); text-transform: uppercase;">Энергия на нуле</h2>
-        <p style="color: #ccc; line-height: 1.5; margin-bottom: 20px;">
-            Ты потратил все 5 попыток.<br>
-            Чтобы зарядить батарейку на 100%, поделись этой находкой с другом.
-        </p>
-        <button onclick="shareToUnlock()" class="limit-btn">
-            ✈️ Поделиться (+5 зарядов)
-        </button>
+        <div style="font-size:60px; margin-bottom:20px;">🪫</div>
+        <h2 style="font-family:var(--font-display); text-transform:uppercase;">Энергия на нуле</h2>
+        <button onclick="share()" class="gen-btn" style="background:#229ED9; color:#fff; width:auto; padding:15px 40px;">ПОДЕЛИТЬСЯ (+5)</button>
     </div>
 
-<script>
-    // === CONFIG ===
-    const TG_BOT_LINK = "https://t.me/neiromagic_st_bot";
-    const MAX_CREDITS = 5;
-    const REWARD = 5;
-
-    // Инициализация Telegram
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // === БАЗА СТИЛЕЙ (PROMPTS) ===
-    const STYLES_DB = {
-        "cyberpunk": "cyberpunk style, neon lights, futuristic city background, rain, high contrast, vibrant colors, ray tracing, 8k resolution, highly detailed",
-        "realism": "professional photography, shot on 85mm lens, f/1.8, sharp focus, hyperrealistic, 8k, highly detailed, dramatic lighting, skin texture",
-        "cinema": "cinematic shot, epic composition, color graded, teal and orange, blockbuster movie scene, volumetric lighting, 8k, widescreen",
-        "disney": "pixar style, 3d render, octane render, cute, colorful, soft lighting, highly detailed, disney animation style",
-        "anime": "anime style, studio ghibli, makoto shinkai, vivid colors, beautiful background, highly detailed, 4k",
-        "fantasy": "dark fantasy style, mystical atmosphere, fog, magic glowing, detailed armor, epic, gloomy, digital painting, artstation",
-        "oil": "oil painting, textured, impasto, masterpiece, traditional art, detailed brushstrokes",
-        "pixel": "pixel art, 16-bit, retro game style, dithering, detailed",
-        "architecture": "architectural photography, modern design, interior, natural light, clean lines, 8k, unreal engine 5",
-        "mystic": "mystical, tarot card style, gold details, smoke, esoteric symbols, magical, ethereal, highly detailed"
-    };
-
-    // === ФОНОВАЯ АНИМАЦИЯ ===
-    const canvas = document.getElementById('neural-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
-            this.size = Math.random() * 2;
-        }
-        update() {
-            this.x += this.vx; this.y += this.vy;
-            if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
-            if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        }
-        draw() {
-            ctx.fillStyle = '#00D9FF';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    function initParticles() { particles = []; for(let i=0; i<30; i++) particles.push(new Particle()); }
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for(let i=0; i<particles.length; i++) {
-            particles[i].update(); particles[i].draw();
-            for(let j=i; j<particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < 100) {
-                    ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist/100})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
-                }
-            }
-        }
-        requestAnimationFrame(animate);
-    }
-    initParticles(); animate();
-
-    // === ЛОГИКА ===
-    function getCredits() {
-        const dateKey = 'alex_date_' + new Date().getDate();
-        if (localStorage.getItem('last_date_key') !== dateKey) {
-            localStorage.setItem('last_date_key', dateKey);
-            localStorage.setItem('alex_credits', MAX_CREDITS);
-            return MAX_CREDITS;
-        }
-        let c = parseInt(localStorage.getItem('alex_credits'));
-        return isNaN(c) ? MAX_CREDITS : c;
-    }
-
-    function updateUI() {
-        const credits = getCredits();
-        const badge = document.getElementById('credits-counter');
-        badge.innerText = `${credits}/${MAX_CREDITS}`;
-        badge.style.color = credits > 2 ? "#00D9FF" : "#FF0055";
-        document.getElementById('limit-overlay').style.display = credits <= 0 ? 'flex' : 'none';
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.classList.add('show');
-        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function switchTab(t) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        
-        if (t === 'art') {
-            document.getElementById('btn-tab-art').classList.add('active');
-            document.getElementById('tab-art').classList.add('active');
-        } else {
-            document.getElementById('btn-tab-helper').classList.add('active');
-            document.getElementById('tab-helper').classList.add('active');
-        }
-        if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-    }
-
-    // --- ГЛАВНАЯ ФИШКА: УМНЫЙ ПРОМПТ ---
-    function buildPrompt() {
-        const idea = document.getElementById('helper-idea').value;
-        const styleKey = document.getElementById('helper-style').value;
-        
-        if (!idea) {
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-            alert("⚠️ Эй, напиши хотя бы пару слов идеи!");
-            return;
-        }
-
-        // 1. Берем хвост из базы
-        const suffix = STYLES_DB[styleKey] || "";
-        
-        // 2. Склеиваем
-        const finalPrompt = `${idea}, ${suffix}, masterpiece, best quality`;
-
-        // 3. Вставляем в генератор
-        document.getElementById('prompt-input').value = finalPrompt;
-        
-        // 4. Переключаем вкладку и показываем уведомление
-        switchTab('art');
-        showToast("✅ Промпт создан! Жми запуск");
-    }
-
-    async function generate() {
-        const credits = getCredits();
-        if (credits <= 0) return;
-
-        const prompt = document.getElementById('prompt-input').value;
-        const model = document.getElementById('model-select').value;
-        
-        if (!prompt) { alert("Поле пустое!"); return; }
-
-        // Списание
-        localStorage.setItem('alex_credits', credits - 1);
-        updateUI();
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-        const btn = document.getElementById('gen-btn');
-        const resArea = document.getElementById('result-area');
-        const promo = document.getElementById('promo-box');
-
-        btn.disabled = true;
-        btn.innerText = "🔮 ГЕНЕРАЦИЯ...";
-        promo.style.display = 'none';
-        
-        resArea.innerHTML = `
-            <div style="text-align:center; padding:20px;">
-                <div class="loader"></div>
-                <div class="loading-msg">Нейросеть рисует...<br>Подожди секунд 15 ✨</div>
-            </div>
-        `;
-
-        const seed = Math.floor(Math.random() * 1000000);
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=${model}&width=1024&height=1024&seed=${seed}&nologo=true`;
-
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.className = "generated-img";
-        img.src = url;
-
-        img.onload = () => {
-            resArea.innerHTML = '';
-            resArea.appendChild(img);
-            btn.disabled = false;
-            btn.innerText = "🚀 ЕЩЕ РАЗ";
-            promo.style.display = 'block';
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            promo.scrollIntoView({behavior: "smooth"});
-        };
-
-        img.onerror = () => {
-            resArea.innerHTML = '<div style="color:#FF0055; padding:20px;">Ошибка сервера. Попробуй модель Turbo.</div>';
-            btn.disabled = false;
-            btn.innerText = "ПОВТОРИТЬ";
-            localStorage.setItem('alex_credits', credits); // Вернуть кредит
-            updateUI();
-        };
-    }
-
-    function shareToUnlock() {
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-        const shareText = "🔥 Нашел бесплатный генератор ALEX:LAB! Безлимит. Залетай:";
-        const url = `https://t.me/share/url?url=${TG_BOT_LINK}&text=${encodeURIComponent(shareText)}`;
-        tg.openTelegramLink(url);
-        
-        setTimeout(() => {
-            localStorage.setItem('alex_credits', MAX_CREDITS + REWARD);
-            updateUI();
-            alert("🔋 ЭНЕРГИЯ ВОССТАНОВЛЕНА! (+5)");
-        }, 8000);
-    }
-
-    updateUI();
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
