@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#00D9FF">
-    <title>ALEX:LAB — Nexus 8.0</title>
+    <title>ALEX:LAB — Nexus 9.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -58,7 +58,7 @@
         .logo-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #000; }
         .brand-name { font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; background: var(--grad-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* СОЦСЕТИ + TAPLINK */
+        /* СОЦСЕТИ */
         .social-row { display: flex; gap: 12px; margin: 15px 0; }
         .social-link {
             width: 42px; height: 42px; border-radius: 50%;
@@ -72,7 +72,7 @@
 
         .energy-badge { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
-        /* === ТАБЫ (РАЗДЕЛЕННЫЕ) === */
+        /* === TABS === */
         .tabs-container {
             background: rgba(0, 0, 0, 0.5); padding: 6px; border-radius: 18px;
             display: flex; gap: 8px; border: 1px solid rgba(255,255,255,0.05);
@@ -81,9 +81,9 @@
         .tab-btn {
             flex: 1; padding: 12px 5px; border: none; background: rgba(255,255,255,0.03);
             color: var(--text-muted); font-family: var(--font-display);
-            font-size: 9px; font-weight: 700; text-transform: uppercase;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
             border-radius: 12px; cursor: pointer; transition: 0.2s;
-            border: 1px solid transparent;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
         }
         .tab-btn.active {
             background: rgba(255, 255, 255, 0.1); color: #fff;
@@ -91,7 +91,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* === CONTENT CARDS === */
+        /* === MAIN CARD === */
         .main-card {
             background: var(--card-bg); backdrop-filter: blur(20px);
             border-radius: 24px; padding: 20px;
@@ -103,7 +103,7 @@
         .tab-content.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ВВОД */
+        /* UI ELEMENTS */
         .input-label { display: block; font-size: 10px; color: var(--cyan); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
         .modern-select, .modern-input { width: 100%; padding: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-family: var(--font-main); font-size: 14px; margin-bottom: 15px; }
         .gen-btn { width: 100%; padding: 18px; background: var(--grad-main); border: none; border-radius: 16px; color: #000; font-family: var(--font-display); font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(0, 217, 255, 0.2); }
@@ -111,17 +111,41 @@
         #result-area { margin-top: 20px; min-height: 280px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 2px dashed rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .generated-img { width: 100%; height: auto; display: block; }
 
-        /* ЧАТ */
+        /* === CHAT UI (UPDATED WITH AVATAR) === */
         .chat-wrapper { display: flex; flex-direction: column; height: 420px; }
-        .chat-history { flex: 1; overflow-y: auto; padding: 5px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; scrollbar-width: none; }
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 13px; line-height: 1.4; }
-        .msg.alex { align-self: flex-start; background: rgba(255,255,255,0.07); color: #eee; border-bottom-left-radius: 2px; }
-        .msg.user { align-self: flex-end; background: var(--purple-primary, #B266FF); color: #fff; border-bottom-right-radius: 2px; }
+        .chat-history { flex: 1; overflow-y: auto; padding: 5px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 10px; scrollbar-width: none; }
+        
+        /* Сообщение бота с аватаркой */
+        .msg-row { display: flex; align-items: flex-end; gap: 10px; }
+        .alex-avatar { 
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover; 
+            border: 2px solid var(--purple); flex-shrink: 0;
+            box-shadow: 0 0 10px rgba(178, 102, 255, 0.4);
+        }
+        
+        .msg { padding: 12px 16px; border-radius: 16px; font-size: 13px; line-height: 1.4; max-width: 85%; }
+        
+        /* Стиль Алекса */
+        .msg.alex { 
+            background: rgba(255,255,255,0.07); color: #eee; 
+            border-top-left-radius: 4px; /* Хвостик */
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Стиль Пользователя */
+        .msg.user { 
+            align-self: flex-end; 
+            background: var(--purple); color: #fff; 
+            border-bottom-right-radius: 4px; /* Хвостик */
+            box-shadow: 0 5px 15px rgba(178, 102, 255, 0.2);
+            margin-left: auto; /* Прижать вправо */
+        }
+        
         .chat-input-area { display: flex; gap: 8px; }
         .chat-msg-input { flex: 1; background: #000; border: 1px solid #333; border-radius: 12px; padding: 12px; color: #fff; font-family: inherit; }
         .chat-send-btn { width: 48px; background: var(--cyan); border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* B2B FOOTER */
+        /* FOOTER & PROMO */
         .footer { margin-top: auto; padding: 25px 0; display: flex; justify-content: center; }
         .b2b-btn {
             background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
@@ -131,6 +155,19 @@
             box-shadow: 0 0 15px rgba(0, 217, 255, 0.1); animation: breathe 4s infinite;
         }
         @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; box-shadow: 0 0 25px rgba(0, 217, 255, 0.3); } }
+
+        .promo-box {
+            display: none; margin-top: 20px;
+            background: linear-gradient(180deg, rgba(178, 102, 255, 0.1) 0%, rgba(0,0,0,0) 100%);
+            border: 1px solid var(--purple); border-radius: 16px; padding: 20px; text-align: center;
+        }
+        .promo-btn {
+            display: inline-block; width: 100%; padding: 14px;
+            background: linear-gradient(90deg, #FF0055, #FF5500);
+            color: #fff; text-decoration: none; border-radius: 12px;
+            font-weight: 700; text-transform: uppercase; font-size: 12px;
+            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4);
+        }
 
         /* UTILS */
         .limit-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
@@ -169,9 +206,15 @@
         </header>
 
         <nav class="tabs-container">
-            <button id="tab-btn-art" class="tab-btn active" onclick="switchTab('art')">🎨 Творить</button>
-            <button id="tab-btn-helper" class="tab-btn" onclick="switchTab('helper')">💡 Идеи</button>
-            <button id="tab-btn-chat" class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
+            <button id="tab-btn-art" class="tab-btn active" onclick="switchTab('art')">
+                <span>🎨</span> Генератор
+            </button>
+            <button id="tab-btn-helper" class="tab-btn" onclick="switchTab('helper')">
+                <span>💡</span> Идеи
+            </button>
+            <button id="tab-btn-chat" class="tab-btn" onclick="switchTab('chat')">
+                <span>💬</span> Alex AI
+            </button>
         </nav>
 
         <main class="main-card">
@@ -186,7 +229,13 @@
                 <label class="input-label">Твой запрос</label>
                 <textarea id="prompt-input" class="modern-input" placeholder="Например: Кот в костюме джедая..."></textarea>
                 <button id="gen-btn" onclick="generate()" class="gen-btn">ЗАПУСТИТЬ МАГИЮ</button>
-                <div id="result-area"><div style="color:#444; font-size:12px;">Твой шедевр будет здесь...</div></div>
+                <div id="result-area"><div style="color:#666; font-size:12px;">Твой шедевр будет здесь...</div></div>
+                
+                <div id="promo-box" class="promo-box">
+                    <div style="font-size:14px; color:#fff; font-weight:700; margin-bottom:10px;">Хочешь оживить это фото? 🔥</div>
+                    <p style="font-size:11px; color:#ccc; margin-bottom:15px;">Создай видео-анимацию за 1 клик</p>
+                    <a href="https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21" target="_blank" class="promo-btn">🎬 СМОТРЕТЬ УРОК</a>
+                </div>
             </div>
 
             <div id="pane-helper" class="tab-content">
@@ -200,13 +249,22 @@
                     <option value="disney">🧊 3D Мультик</option>
                     <option value="anime">⛩️ Аниме (Япония)</option>
                 </select>
-                <button onclick="buildPrompt()" class="gen-btn" style="background:#1a1a1a; color:#fff; border:1px solid #333;">СОЗДАТЬ И ПЕРЕНЕСТИ</button>
+                <button onclick="buildPrompt()" class="gen-btn" style="background:#1a1a1a; color:var(--cyan); border:1px solid var(--cyan);">СОЗДАТЬ И ПЕРЕНЕСТИ</button>
             </div>
 
             <div id="pane-chat" class="tab-content">
                 <div class="chat-wrapper">
                     <div id="chat-box" class="chat-history">
-                        <div class="msg alex">Йо! 👋 Я цифровой клон Алекса. Пока он занят, я тут за главного. Знаю всё про нейронки и как на них заработать. Чего натворим сегодня?</div>
+                        
+                        <div class="msg-row">
+                            <img src="founder.jpg" class="alex-avatar" alt="Alex">
+                            <div class="msg alex">
+                                <strong>Alex (Digital Twin)</strong><br><br>
+                                Салют! 👋 Я цифровая копия Алекса. Пока мой кожаный оригинал занят делами, я тут за главного.<br><br>
+                                Шасрю за нейронки, могу подкинуть идею или просто поболтать. Чего хочешь создать?
+                            </div>
+                        </div>
+
                     </div>
                     <div class="chat-input-area">
                         <input type="text" id="chat-input" class="chat-msg-input" placeholder="Напиши мне..." onkeypress="if(event.key==='Enter')sendChat()">
@@ -218,7 +276,7 @@
 
         <footer class="footer">
             <a href="https://telegra.ph/Kak-poluchat-lidov-za-kopejki-poka-konkurenty-slivayut-byudzhet-Tvoj-lichnyj-AI-magnit-01-29" target="_blank" class="b2b-btn">
-                🚀 Хочешь такой же сервис? Лиды потекут рекой!
+                🚀 Хочешь такой же сервис? Жми!
             </a>
         </footer>
     </div>
@@ -235,7 +293,7 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // BACKGROUND
+    // BACKGROUND ANIMATION
     const canvas = document.getElementById('neural-canvas');
     const ctx = canvas.getContext('2d');
     let pts = [];
@@ -279,21 +337,28 @@
     }
     function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 
-    // CHAT
-    let chatHist = [{role:"system",content:"Ты Алекс, основатель ALEX:LAB. Ты цифровой клон, веселый, дерзкий, дружелюбный. Общаешься на 'ты'. Используй сленг: бро, изи, нейронки. Первые 5 сообщений просто общайся. Если спросят про обучение - рекомендуй курс (https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21). Если диалог долгий - предложи сделать такой же сайт за 14990р."}];
-    let msgCount = 0;
+    // CHAT LOGIC WITH AVATAR
+    let chatHist = [{role:"system",content:"Ты Алекс, основатель ALEX:LAB. Ты цифровой клон, веселый, дерзкий, дружелюбный. Общаешься на 'ты'. Используй сленг: бро, изи, нейронки. Первые 5 сообщений просто общайся. Если спросят про обучение - рекомендуй курс (https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21). Если диалог долгий - предложи сделать такой же сайт за 14990р. Не пиши длинные тексты."}];
 
     async function sendChat() {
         const inp = document.getElementById('chat-input');
         const txt = inp.value.trim(); if(!txt) return;
         const box = document.getElementById('chat-box');
         
+        // USER MSG
         box.innerHTML += `<div class="msg user">${txt}</div>`;
         chatHist.push({role:"user",content:txt}); inp.value = '';
-        msgCount++;
+        box.scrollTop = box.scrollHeight;
         
-        const load = document.createElement('div'); load.className='msg alex'; load.innerText='...';
-        box.appendChild(load); box.scrollTop = box.scrollHeight;
+        // LOADING
+        const loadID = 'load-'+Date.now();
+        box.innerHTML += `
+            <div class="msg-row" id="${loadID}">
+                <img src="founder.jpg" class="alex-avatar">
+                <div class="msg alex">...</div>
+            </div>
+        `;
+        box.scrollTop = box.scrollHeight;
 
         try {
             const r = await fetch('https://text.pollinations.ai/', {
@@ -302,13 +367,23 @@
                 body:JSON.stringify({messages:chatHist, model:'openai'})
             });
             const ans = await r.text();
-            load.innerHTML = marked.parse(ans);
+            
+            // REPLACE LOADING WITH ANSWER
+            const loadEl = document.getElementById(loadID);
+            loadEl.innerHTML = `
+                <img src="founder.jpg" class="alex-avatar">
+                <div class="msg alex">${marked.parse(ans)}</div>
+            `;
+            
             chatHist.push({role:"assistant",content:ans});
-        } catch(e) { load.innerText = "Чё-то связь барахлит, бро. Попробуй позже!"; }
+        } catch(e) { 
+            document.getElementById(loadID).remove();
+            showToast("Связь прервалась..."); 
+        }
         box.scrollTop = box.scrollHeight;
     }
 
-    // GEN
+    // GENERATOR
     const styles = {
         cyberpunk: "cyberpunk style, neon lights, rainy futuristic city, 8k",
         realism: "professional photography, 85mm lens, hyperrealistic, sharp focus",
@@ -337,14 +412,23 @@
 
         const btn = document.getElementById('gen-btn');
         const res = document.getElementById('result-area');
+        const promo = document.getElementById('promo-box');
+
         btn.disabled = true; btn.innerText = "🔮 КОЛДУЕМ...";
         res.innerHTML = '<div class="loader"></div>';
+        promo.style.display = 'none';
 
         const s = Math.floor(Math.random()*1e6);
         const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(pr)}?model=${md}&width=1024&height=1024&seed=${s}&nologo=true`;
 
         const img = new Image(); img.src = url; img.className='generated-img';
-        img.onload = () => { res.innerHTML=''; res.appendChild(img); btn.disabled=false; btn.innerText="ЗАПУСТИТЬ МАГИЮ"; if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success'); };
+        img.onload = () => { 
+            res.innerHTML=''; res.appendChild(img); 
+            btn.disabled=false; btn.innerText="ЗАПУСТИТЬ МАГИЮ"; 
+            promo.style.display='block';
+            if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success'); 
+            promo.scrollIntoView({behavior:"smooth"});
+        };
         img.onerror = () => { res.innerText="Ошибка. Попробуй ещё раз."; btn.disabled=false; localStorage.setItem('alex_credits', c); updateUI(); };
     }
 
