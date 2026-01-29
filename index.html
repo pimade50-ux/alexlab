@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#00D9FF">
-    <title>ALEX:LAB — Nexus</title>
+    <title>ALEX:LAB — Nexus 8.0</title>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Unbounded:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -21,10 +21,9 @@
             --purple: #B266FF;
             --pink: #FF3399;
             --dark-bg: #050505;
-            --card-bg: rgba(20, 20, 25, 0.7);
+            --card-bg: rgba(20, 20, 25, 0.85);
             --text-main: #ffffff;
-            --text-muted: #8e9aaf;
-            
+            --text-muted: rgba(255, 255, 255, 0.5);
             --grad-main: linear-gradient(135deg, var(--cyan), var(--purple));
             --font-main: 'Montserrat', sans-serif;
             --font-display: 'Unbounded', sans-serif;
@@ -36,15 +35,11 @@
             font-family: var(--font-main);
             color: var(--text-main);
             min-height: 100vh;
-            overflow-x: hidden;
             display: flex; flex-direction: column; align-items: center;
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050505 70%);
         }
 
-        /* Фон */
-        #neural-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; opacity: 0.5;
-        }
+        #neural-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.4; pointer-events: none; }
 
         .app-container {
             position: relative; z-index: 10;
@@ -53,219 +48,96 @@
             min-height: 100vh;
         }
 
-        /* === ШАПКА === */
-        .header {
-            text-align: center; margin-top: 10px; margin-bottom: 5px;
-            display: flex; flex-direction: column; align-items: center;
-            position: relative; z-index: 20;
-        }
-
+        /* === HEADER === */
+        .header { text-align: center; margin-top: 10px; display: flex; flex-direction: column; align-items: center; }
         .logo-wrapper {
-            width: 85px; height: 85px;
-            border-radius: 50%; padding: 3px;
-            background: var(--grad-main);
-            box-shadow: 0 0 25px rgba(0, 217, 255, 0.3);
-            margin-bottom: 10px;
+            width: 80px; height: 80px; border-radius: 50%; padding: 3px;
+            background: var(--grad-main); box-shadow: 0 0 25px rgba(0, 217, 255, 0.3);
+            margin-bottom: 12px;
         }
-        
-        .logo-img {
-            width: 100%; height: 100%; border-radius: 50%;
-            object-fit: cover; background: #000; border: 3px solid #000;
-        }
+        .logo-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #000; }
+        .brand-name { font-family: var(--font-display); font-weight: 800; font-size: 22px; text-transform: uppercase; background: var(--grad-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .brand-name {
-            font-family: var(--font-display); font-weight: 800; font-size: 24px;
-            text-transform: uppercase; letter-spacing: 1px;
-            background: var(--grad-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin: 0;
-        }
-
-        /* === СОЦСЕТИ (ИСПРАВЛЕНЫ) === */
-        .social-row {
-            display: flex; gap: 20px; margin-top: 15px; margin-bottom: 10px;
-        }
+        /* СОЦСЕТИ + TAPLINK */
+        .social-row { display: flex; gap: 12px; margin: 15px 0; }
         .social-link {
-            display: flex; align-items: center; justify-content: center;
-            width: 44px; height: 44px; /* Увеличенная зона клика */
-            border-radius: 50%;
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-            color: #fff; transition: 0.3s;
-            text-decoration: none;
+            width: 42px; height: 42px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: 0.3s;
         }
-        .social-link svg { width: 22px; height: 22px; fill: currentColor; }
-        
-        .social-link.tt:hover, .social-link.tt:active { background: #000; border-color: #00f2ea; color: #00f2ea; box-shadow: 0 0 15px rgba(0, 242, 234, 0.4); transform: scale(1.1); }
-        .social-link.yt:hover, .social-link.yt:active { background: #FF0000; border-color: #FF0000; color: #fff; box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); transform: scale(1.1); }
+        .social-link svg { width: 20px; height: 20px; fill: currentColor; }
+        .social-link.tap { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 10px rgba(0, 217, 255, 0.2); }
+        .social-link:active { transform: scale(0.9); background: rgba(255,255,255,0.15); }
 
-        .energy-badge {
-            margin-top: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 14px; border-radius: 20px;
-            font-size: 11px; font-weight: 600;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .energy-badge { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
-        /* === ВКЛАДКИ (3 ШТУКИ) === */
+        /* === ТАБЫ (РАЗДЕЛЕННЫЕ) === */
         .tabs-container {
-            background: #141418; padding: 5px; border-radius: 16px;
-            display: flex; gap: 5px; border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0, 0, 0, 0.5); padding: 6px; border-radius: 18px;
+            display: flex; gap: 8px; border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
-
         .tab-btn {
-            flex: 1; padding: 12px 5px; border: none; background: transparent;
+            flex: 1; padding: 12px 5px; border: none; background: rgba(255,255,255,0.03);
             color: var(--text-muted); font-family: var(--font-display);
-            font-size: 10px; font-weight: 700; text-transform: uppercase;
-            border-radius: 12px; cursor: pointer; transition: 0.3s;
+            font-size: 9px; font-weight: 700; text-transform: uppercase;
+            border-radius: 12px; cursor: pointer; transition: 0.2s;
+            border: 1px solid transparent;
         }
-
         .tab-btn.active {
-            background: rgba(255, 255, 255, 0.15); color: #fff;
+            background: rgba(255, 255, 255, 0.1); color: #fff;
+            border-color: rgba(255,255,255,0.1);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* === ОСНОВНОЙ БЛОК === */
+        /* === CONTENT CARDS === */
         .main-card {
             background: var(--card-bg); backdrop-filter: blur(20px);
             border-radius: 24px; padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            flex: 1; display: flex; flex-direction: column;
+            flex: 1;
         }
-
-        .tab-content { display: none; animation: fadeUp 0.3s ease; width: 100%; }
+        .tab-content { display: none; animation: slideUp 0.3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* === ЭЛЕМЕНТЫ ВВОДА === */
-        .input-label {
-            display: block; font-size: 11px; color: var(--cyan); font-weight: 700;
-            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;
-        }
-
-        .modern-select, .modern-input {
-            width: 100%; padding: 16px;
-            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 14px; color: #fff; font-family: var(--font-main); font-size: 14px;
-            transition: 0.3s;
-        }
-        .modern-select:focus, .modern-input:focus { border-color: var(--cyan); }
-        .modern-input { min-height: 110px; resize: none; line-height: 1.5; }
-
-        .gen-btn {
-            width: 100%; margin-top: 15px; padding: 18px;
-            background: var(--grad-main); border: none; border-radius: 16px;
-            color: #000; font-family: var(--font-display); font-weight: 900;
-            font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.2);
-            transition: 0.3s;
-        }
-        .gen-btn:active { transform: scale(0.98); }
-        .gen-btn:disabled { background: #333; color: #777; box-shadow: none; }
+        /* ВВОД */
+        .input-label { display: block; font-size: 10px; color: var(--cyan); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+        .modern-select, .modern-input { width: 100%; padding: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: #fff; font-family: var(--font-main); font-size: 14px; margin-bottom: 15px; }
+        .gen-btn { width: 100%; padding: 18px; background: var(--grad-main); border: none; border-radius: 16px; color: #000; font-family: var(--font-display); font-weight: 900; font-size: 14px; text-transform: uppercase; cursor: pointer; box-shadow: 0 10px 25px rgba(0, 217, 255, 0.2); }
         
-        /* === ЧАТ (DIGITAL ALEX) === */
-        .chat-wrapper {
-            display: flex; flex-direction: column; height: 400px;
-        }
-        .chat-history {
-            flex: 1; overflow-y: auto; padding: 10px;
-            display: flex; flex-direction: column; gap: 12px;
-            margin-bottom: 10px; scrollbar-width: none;
-        }
-        .msg {
-            max-width: 85%; padding: 12px 16px; border-radius: 16px;
-            font-size: 13px; line-height: 1.4; position: relative;
-        }
-        .msg.alex {
-            align-self: flex-start; background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.05); color: #ddd;
-            border-bottom-left-radius: 4px;
-        }
-        .msg.user {
-            align-self: flex-end; background: var(--purple);
-            color: #fff; border-bottom-right-radius: 4px;
-            box-shadow: 0 5px 15px rgba(178, 102, 255, 0.3);
-        }
-        .msg strong { color: var(--cyan); }
-        .chat-input-area { display: flex; gap: 10px; }
-        .chat-input {
-            flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px; color: white; font-family: inherit;
-        }
-        .chat-send {
-            width: 50px; background: var(--cyan); border: none; border-radius: 12px;
-            color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
+        #result-area { margin-top: 20px; min-height: 280px; background: rgba(0,0,0,0.3); border-radius: 16px; border: 2px dashed rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .generated-img { width: 100%; height: auto; display: block; }
 
-        /* === B2B FOOTER (НОВОЕ) === */
-        .footer {
-            margin-top: auto; padding: 20px 0 30px 0; display: flex; justify-content: center;
-        }
+        /* ЧАТ */
+        .chat-wrapper { display: flex; flex-direction: column; height: 420px; }
+        .chat-history { flex: 1; overflow-y: auto; padding: 5px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; scrollbar-width: none; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 13px; line-height: 1.4; }
+        .msg.alex { align-self: flex-start; background: rgba(255,255,255,0.07); color: #eee; border-bottom-left-radius: 2px; }
+        .msg.user { align-self: flex-end; background: var(--purple-primary, #B266FF); color: #fff; border-bottom-right-radius: 2px; }
+        .chat-input-area { display: flex; gap: 8px; }
+        .chat-msg-input { flex: 1; background: #000; border: 1px solid #333; border-radius: 12px; padding: 12px; color: #fff; font-family: inherit; }
+        .chat-send-btn { width: 48px; background: var(--cyan); border: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* B2B FOOTER */
+        .footer { margin-top: auto; padding: 25px 0; display: flex; justify-content: center; }
         .b2b-btn {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--cyan);
-            padding: 12px 24px; border-radius: 30px;
-            color: #fff; text-decoration: none;
-            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
-            animation: pulseGlow 3s infinite ease-in-out;
-            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px);
+            border: 1px solid var(--cyan); padding: 14px 24px; border-radius: 30px;
+            color: #fff; text-decoration: none; font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.1); animation: breathe 4s infinite;
         }
-        .b2b-btn:hover { background: rgba(0, 217, 255, 0.15); transform: translateY(-2px); }
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 10px rgba(0, 217, 255, 0.1); } 50% { box-shadow: 0 0 25px rgba(0, 217, 255, 0.4); } 100% { box-shadow: 0 0 10px rgba(0, 217, 255, 0.1); } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; box-shadow: 0 0 25px rgba(0, 217, 255, 0.3); } }
 
-        /* === ОСТАЛЬНОЕ === */
-        #result-area {
-            margin-top: 20px; min-height: 250px;
-            background: rgba(0,0,0,0.4); border-radius: 16px;
-            border: 2px dashed rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-        }
-        .generated-img { width: 100%; height: auto; display: block; animation: zoomIn 0.5s; }
-        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .promo-box {
-            display: none; margin-top: 20px;
-            background: linear-gradient(180deg, rgba(178, 102, 255, 0.1) 0%, rgba(0,0,0,0) 100%);
-            border: 1px solid var(--purple); border-radius: 16px; padding: 20px; text-align: center;
-        }
-        .promo-btn {
-            display: inline-block; width: 100%; padding: 14px;
-            background: linear-gradient(90deg, #FF0055, #FF5500);
-            color: #fff; text-decoration: none; border-radius: 12px;
-            font-weight: 700; text-transform: uppercase; font-size: 12px;
-            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.4);
-        }
-
-        .limit-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.95); z-index: 999;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            padding: 30px; text-align: center; backdrop-filter: blur(10px);
-        }
-        .limit-btn {
-            background: #229ED9; color: #fff; border: none; padding: 16px 30px;
-            border-radius: 30px; font-weight: 700; text-transform: uppercase; font-size: 13px;
-            margin-top: 20px; cursor: pointer;
-        }
-        
-        #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(20, 20, 25, 0.9); border: 1px solid var(--cyan);
-            color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 12px;
-            font-weight: 600; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.3s;
-        }
-        #toast.show { opacity: 1; top: 30px; }
-        
-        /* Loader */
-        .loading-container { text-align: center; }
-        .loader { width: 30px; height: 30px; border: 3px solid rgba(0,217,255,0.2); border-top-color: var(--cyan); border-radius: 50%; animation: spin 1s infinite linear; margin: 0 auto 10px; }
-        @keyframes spin { to {transform: rotate(360deg);} }
+        /* UTILS */
+        .limit-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: var(--cyan); color: #000; padding: 10px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; z-index: 2000; opacity: 0; transition: 0.3s; pointer-events: none; }
+        #toast.show { opacity: 1; }
+        .loader { width: 30px; height: 30px; border: 3px solid rgba(0,217,255,0.1); border-top-color: var(--cyan); border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -275,281 +147,211 @@
 
     <div class="app-container">
         
-        <div class="header">
+        <header class="header">
             <div class="logo-wrapper">
                 <img src="avatar.png" alt="ALEX:LAB" class="logo-img">
             </div>
             <h1 class="brand-name">ALEX:LAB</h1>
             
             <div class="social-row">
-                <a href="https://www.tiktok.com/@alex_aiq" target="_blank" class="social-link tt">
+                <a href="https://www.tiktok.com/@alex_aiq" target="_blank" class="social-link">
                     <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
                 </a>
-                <a href="https://www.youtube.com/@alexlab_ai" target="_blank" class="social-link yt">
+                <a href="https://www.youtube.com/@alexlab_ai" target="_blank" class="social-link">
                     <svg viewBox="0 0 24 24"><path d="M21.58 5.4a2.7 2.7 0 0 0-1.9-1.91C18 3.05 12 3.05 12 3.05s-6 0-7.68.45a2.7 2.7 0 0 0-1.9 1.9c-.46 1.69-.46 5.2-.46 5.2s0 3.52.46 5.2a2.7 2.7 0 0 0 1.9 1.9c1.68.45 7.68.45 7.68.45s6 0 7.68-.45a2.7 2.7 0 0 0 1.9-1.9c.46-1.68.46-5.2.46-5.2s0-3.51-.46-5.2zM10 13.66v-4.5l4.33 2.25L10 13.66z"/></svg>
+                </a>
+                <a href="https://taplink.cc/alexlab" target="_blank" class="social-link tap">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
                 </a>
             </div>
 
-            <div class="energy-badge">
-                <span>⚡ Заряд:</span>
-                <span id="credits-counter" style="color:var(--cyan)">5/5</span>
-            </div>
-        </div>
+            <div class="energy-badge">⚡ Заряд: <span id="credits-val">5/5</span></div>
+        </header>
 
-        <div class="tabs-container">
-            <button id="btn-tab-art" class="tab-btn active" onclick="switchTab('art')">🎨 Генератор</button>
-            <button id="btn-tab-helper" class="tab-btn" onclick="switchTab('helper')">💡 Идеи</button>
-            <button id="btn-tab-chat" class="tab-btn" onclick="switchTab('chat')">💬 Alex AI</button>
-        </div>
+        <nav class="tabs-container">
+            <button id="tab-btn-art" class="tab-btn active" onclick="switchTab('art')">🎨 Творить</button>
+            <button id="tab-btn-helper" class="tab-btn" onclick="switchTab('helper')">💡 Идеи</button>
+            <button id="tab-btn-chat" class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
+        </nav>
 
-        <div class="main-card">
-            
-            <div id="tab-art" class="tab-content active">
-                <div style="margin-bottom: 15px;">
-                    <span class="input-label">1. Нейросеть</span>
-                    <select id="model-select" class="modern-select">
-                        <option value="flux">🦄 Flux (Универсальная)</option>
-                        <option value="flux-realism">📸 Realism (Фото-качество)</option>
-                        <option value="flux-3d">🧊 3D Disney (Мультики)</option>
-                        <option value="turbo">⚡ Turbo (Моментально)</option>
-                        <option value="midjourney">🌌 Midjourney (Арт)</option>
-                    </select>
-                </div>
-
-                <div style="margin-bottom: 5px;">
-                    <span class="input-label">2. Описание</span>
-                    <textarea id="prompt-input" class="modern-input" placeholder="Например: Кот в костюме джедая..."></textarea>
-                </div>
-
-                <button id="gen-btn" onclick="generate()" class="gen-btn">🚀 ЗАПУСТИТЬ МАГИЮ</button>
-
-                <div id="result-area">
-                    <div style="text-align:center; padding:20px; color:#666; font-size:12px;">
-                        Твой шедевр появится здесь ✨
-                    </div>
-                </div>
-
-                <div id="promo-box" class="promo-box">
-                    <h3 class="promo-title">Это фото можно оживить! 🔥</h3>
-                    <p class="promo-desc">
-                        Создай видео-анимацию из этой картинки за 1 клик. Хочешь стать НейроМагом?
-                    </p>
-                    <a href="https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21" target="_blank" class="promo-btn">
-                        🎬 СМОТРЕТЬ КУРС
-                    </a>
-                </div>
+        <main class="main-card">
+            <div id="pane-art" class="tab-content active">
+                <label class="input-label">Нейросеть</label>
+                <select id="model-select" class="modern-select">
+                    <option value="flux">🚀 Flux (Универсальная)</option>
+                    <option value="flux-realism">📸 Realism (Фото-качество)</option>
+                    <option value="flux-3d">🧊 3D Disney (Мультики)</option>
+                    <option value="turbo">⚡ Turbo (Моментально)</option>
+                </select>
+                <label class="input-label">Твой запрос</label>
+                <textarea id="prompt-input" class="modern-input" placeholder="Например: Кот в костюме джедая..."></textarea>
+                <button id="gen-btn" onclick="generate()" class="gen-btn">ЗАПУСТИТЬ МАГИЮ</button>
+                <div id="result-area"><div style="color:#444; font-size:12px;">Твой шедевр будет здесь...</div></div>
             </div>
 
-            <div id="tab-helper" class="tab-content">
-                <div style="margin-bottom: 20px;">
-                    <span class="input-label">Твоя идея</span>
-                    <input type="text" id="helper-idea" class="modern-select" placeholder="Девушка под дождем..." style="padding:14px;">
-                </div>
-                
-                <div style="margin-bottom: 25px;">
-                    <span class="input-label">Стиль</span>
-                    <select id="helper-style" class="modern-select">
-                        <option value="cyberpunk">🤖 Киберпанк</option>
-                        <option value="realism">📸 Фотореализм</option>
-                        <option value="cinema">🎥 Эпичное Кино</option>
-                        <option value="disney">🧊 3D Мультик</option>
-                        <option value="anime">⛩️ Аниме</option>
-                        <option value="fantasy">🗡️ Dark Fantasy</option>
-                    </select>
-                </div>
-
-                <button onclick="buildPrompt()" class="gen-btn" style="background: transparent; border: 1px solid var(--cyan); color: var(--cyan);">
-                    ✨ СОЗДАТЬ И ПЕРЕНЕСТИ
-                </button>
+            <div id="pane-helper" class="tab-content">
+                <label class="input-label">Базовая идея</label>
+                <input type="text" id="helper-idea" class="modern-select" placeholder="Девушка под дождем...">
+                <label class="input-label">Стиль отрисовки</label>
+                <select id="helper-style" class="modern-select">
+                    <option value="cyberpunk">🤖 Киберпанк (Неон)</option>
+                    <option value="realism">📸 Фотореализм (Pro)</option>
+                    <option value="cinema">🎥 Эпичное Кино (4K)</option>
+                    <option value="disney">🧊 3D Мультик</option>
+                    <option value="anime">⛩️ Аниме (Япония)</option>
+                </select>
+                <button onclick="buildPrompt()" class="gen-btn" style="background:#1a1a1a; color:#fff; border:1px solid #333;">СОЗДАТЬ И ПЕРЕНЕСТИ</button>
             </div>
 
-            <div id="tab-chat" class="tab-content">
+            <div id="pane-chat" class="tab-content">
                 <div class="chat-wrapper">
-                    <div id="chat-history" class="chat-history">
-                        <div class="msg alex">
-                            Привет! 👋 Я цифровой клон Алекса. Я знаю всё про нейросети и как на этом заработать. <br><br>Спрашивай что угодно или попроси ссылку на курс!
-                        </div>
+                    <div id="chat-box" class="chat-history">
+                        <div class="msg alex">Йо! 👋 Я цифровой клон Алекса. Пока он занят, я тут за главного. Знаю всё про нейронки и как на них заработать. Чего натворим сегодня?</div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chat-msg" class="chat-input" placeholder="Спроси меня..." onkeypress="handleChat(event)">
-                        <button onclick="sendChatMessage()" class="chat-send">➤</button>
+                        <input type="text" id="chat-input" class="chat-msg-input" placeholder="Напиши мне..." onkeypress="if(event.key==='Enter')sendChat()">
+                        <button onclick="sendChat()" class="chat-send-btn">➤</button>
                     </div>
                 </div>
             </div>
+        </main>
 
-        </div>
-
-        <div class="footer">
-            <a href="https://t.me/AlexRozhn" target="_blank" class="b2b-btn">
-                💼 Внедрить AI в свой бизнес
+        <footer class="footer">
+            <a href="https://telegra.ph/Kak-poluchat-lidov-za-kopejki-poka-konkurenty-slivayut-byudzhet-Tvoj-lichnyj-AI-magnit-01-29" target="_blank" class="b2b-btn">
+                🚀 Хочешь такой же сервис? Лиды потекут рекой!
             </a>
-        </div>
-
+        </footer>
     </div>
 
     <div id="limit-overlay" class="limit-overlay">
-        <div style="font-size:50px; margin-bottom:10px;">🪫</div>
-        <h2 style="font-family: var(--font-display); text-transform: uppercase;">Энергия на нуле</h2>
-        <p style="color: #ccc; line-height: 1.5; margin-bottom: 20px;">
-            Ты потратил все 5 попыток.<br>
-            Чтобы зарядить батарейку на 100%, поделись этой находкой с другом.
-        </p>
-        <button onclick="shareToUnlock()" class="limit-btn">
-            ✈️ Поделиться (+5 зарядов)
-        </button>
+        <div style="font-size:60px; margin-bottom:20px;">🪫</div>
+        <h2 style="font-family:var(--font-display); text-transform:uppercase;">Система разряжена</h2>
+        <p style="color:#aaa; font-size:14px; margin-bottom:30px;">Твоя энергия на нуле. Чтобы восстановить заряд на 100%, поделись ссылкой с другом!</p>
+        <button onclick="share()" class="gen-btn" style="background:#229ED9; color:#fff; width:auto; padding:15px 40px;">ПОДЕЛИТЬСЯ (+5 ЗАРЯДОВ)</button>
     </div>
 
 <script>
-    const TG_BOT_LINK = "https://t.me/neiromagic_st_bot";
-    const MAX_CREDITS = 5;
-    const REWARD = 5;
+    const TG_BOT = "https://t.me/neiromagic_st_bot";
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // === ФОН ===
+    // BACKGROUND
     const canvas = document.getElementById('neural-canvas');
     const ctx = canvas.getContext('2d');
-    let particles = [];
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-            this.vx = (Math.random()-0.5)*0.5; this.vy = (Math.random()-0.5)*0.5; this.size = Math.random()*2;
-        }
-        update() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
-        draw() { ctx.fillStyle='#00D9FF'; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
+    let pts = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.onresize = resize; resize();
+    class Pt {
+        constructor() { this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.vx=(Math.random()-0.5)*0.4; this.vy=(Math.random()-0.5)*0.4; }
+        upd() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>canvas.width)this.vx*=-1; if(this.y<0||this.y>canvas.height)this.vy*=-1; }
     }
-    function initParticles() { particles=[]; for(let i=0;i<35;i++) particles.push(new Particle()); }
-    function animate() { ctx.clearRect(0,0,canvas.width,canvas.height); for(let p of particles){p.update();p.draw();} requestAnimationFrame(animate); }
-    initParticles(); animate();
-
-    // === ЛОГИКА ===
-    function getCredits() {
-        const dateKey = 'alex_date_' + new Date().getDate();
-        if (localStorage.getItem('last_date_key') !== dateKey) {
-            localStorage.setItem('last_date_key', dateKey); localStorage.setItem('alex_credits', MAX_CREDITS); return MAX_CREDITS;
+    for(let i=0;i<30;i++) pts.push(new Pt());
+    function anim() {
+        ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#00D9FF';
+        for(let p of pts) {
+            p.upd(); ctx.beginPath(); ctx.arc(p.x,p.y,1.5,0,7); ctx.fill();
+            for(let p2 of pts) {
+                let d = Math.hypot(p.x-p2.x, p.y-p2.y);
+                if(d<100) { ctx.strokeStyle=`rgba(0,217,255,${1-d/100})`; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p2.x,p2.y); ctx.stroke(); }
+            }
         }
-        let c = parseInt(localStorage.getItem('alex_credits')); return isNaN(c) ? MAX_CREDITS : c;
+        requestAnimationFrame(anim);
+    }
+    anim();
+
+    // LOGIC
+    function getCredits() {
+        let c = parseInt(localStorage.getItem('alex_credits'));
+        if(isNaN(c)) c = 5;
+        return c;
     }
     function updateUI() {
-        const credits = getCredits();
-        const badge = document.getElementById('credits-counter');
-        badge.innerText = `${credits}/${MAX_CREDITS}`;
-        badge.style.color = credits > 2 ? "#00D9FF" : "#FF0055";
-        document.getElementById('limit-overlay').style.display = credits <= 0 ? 'flex' : 'none';
-    }
-    function showToast(msg) {
-        const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
+        const c = getCredits();
+        document.getElementById('credits-val').innerText = `${c}/5`;
+        document.getElementById('limit-overlay').style.display = c <= 0 ? 'flex' : 'none';
     }
     function switchTab(t) {
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-        document.getElementById(`btn-tab-${t}`).classList.add('active');
-        document.getElementById(`tab-${t}`).classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(p=>p.classList.remove('active'));
+        document.getElementById('tab-btn-'+t).classList.add('active');
+        document.getElementById('pane-'+t).classList.add('active');
         if(tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
+    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 
-    // === CHAT BOT LOGIC ===
-    let chatHistory = [
-        {role: "system", content: "Ты Алекс, основатель ALEX:LAB. Ты эксперт в ИИ, веселый, дружелюбный, общаешься на 'ты'. Твоя цель — помогать новичкам и нативно рекомендовать курс 'Нейромагия' (ссылка: https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21). Отвечай коротко и полезно. Используй эмодзи."}
-    ];
+    // CHAT
+    let chatHist = [{role:"system",content:"Ты Алекс, основатель ALEX:LAB. Ты цифровой клон, веселый, дерзкий, дружелюбный. Общаешься на 'ты'. Используй сленг: бро, изи, нейронки. Первые 5 сообщений просто общайся. Если спросят про обучение - рекомендуй курс (https://telegra.ph/Flagmanskij-kurs-Nejromagiya-10-01-21). Если диалог долгий - предложи сделать такой же сайт за 14990р."}];
+    let msgCount = 0;
 
-    function handleChat(e) { if(e.key === 'Enter') sendChatMessage(); }
-
-    async function sendChatMessage() {
-        const input = document.getElementById('chat-msg');
-        const text = input.value.trim();
-        if(!text) return;
+    async function sendChat() {
+        const inp = document.getElementById('chat-input');
+        const txt = inp.value.trim(); if(!txt) return;
+        const box = document.getElementById('chat-box');
         
-        const historyBox = document.getElementById('chat-history');
+        box.innerHTML += `<div class="msg user">${txt}</div>`;
+        chatHist.push({role:"user",content:txt}); inp.value = '';
+        msgCount++;
         
-        // User Msg
-        const userDiv = document.createElement('div');
-        userDiv.className = 'msg user'; userDiv.innerText = text;
-        historyBox.appendChild(userDiv);
-        chatHistory.push({role: "user", content: text});
-        input.value = ''; historyBox.scrollTop = historyBox.scrollHeight;
-
-        // Loading
-        const loadDiv = document.createElement('div');
-        loadDiv.className = 'msg alex'; loadDiv.innerHTML = '...';
-        historyBox.appendChild(loadDiv); historyBox.scrollTop = historyBox.scrollHeight;
+        const load = document.createElement('div'); load.className='msg alex'; load.innerText='...';
+        box.appendChild(load); box.scrollTop = box.scrollHeight;
 
         try {
-            const resp = await fetch('https://text.pollinations.ai/', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ messages: chatHistory, model: 'openai' })
+            const r = await fetch('https://text.pollinations.ai/', {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({messages:chatHist, model:'openai'})
             });
-            const answer = await resp.text();
-            loadDiv.innerHTML = marked.parse(answer);
-            chatHistory.push({role: "assistant", content: answer});
-        } catch(e) {
-            loadDiv.innerText = "Что-то связь барахлит... Попробуй позже!";
-        }
-        historyBox.scrollTop = historyBox.scrollHeight;
+            const ans = await r.text();
+            load.innerHTML = marked.parse(ans);
+            chatHist.push({role:"assistant",content:ans});
+        } catch(e) { load.innerText = "Чё-то связь барахлит, бро. Попробуй позже!"; }
+        box.scrollTop = box.scrollHeight;
     }
 
-    // === GENERATOR ===
-    const STYLES_DB = {
-        "cyberpunk": "cyberpunk style, neon lights, futuristic, rain, 8k",
-        "realism": "professional photo, 85mm, sharp focus, hyperrealistic, dramatic light",
-        "cinema": "cinematic shot, epic composition, teal and orange, blockbuster, 8k",
-        "disney": "pixar style, 3d render, cute, colorful, soft lighting",
-        "anime": "anime style, studio ghibli, vivid colors, detailed",
-        "fantasy": "dark fantasy, magic, glowing, epic, gloomy, artstation"
+    // GEN
+    const styles = {
+        cyberpunk: "cyberpunk style, neon lights, rainy futuristic city, 8k",
+        realism: "professional photography, 85mm lens, hyperrealistic, sharp focus",
+        cinema: "cinematic composition, dramatic lighting, block buster style, teal and orange",
+        disney: "pixar 3d render style, cute, soft light, vibrant",
+        anime: "studio ghibli style, vivid colors, hand drawn feel"
     };
 
     function buildPrompt() {
-        const idea = document.getElementById('helper-idea').value;
-        const styleKey = document.getElementById('helper-style').value;
-        if (!idea) { showToast("⚠️ Напиши идею!"); return; }
-        document.getElementById('prompt-input').value = `${idea}, ${STYLES_DB[styleKey] || ""}, best quality`;
-        switchTab('art'); showToast("✅ Промпт готов!");
+        const id = document.getElementById('helper-idea').value;
+        const st = document.getElementById('helper-style').value;
+        if(!id) return showToast("⚠️ Сначала напиши идею!");
+        document.getElementById('prompt-input').value = `${id}, ${styles[st]}, masterpiece, best quality`;
+        showToast("✅ Промпт вставлен! Погнали!");
+        setTimeout(()=>switchTab('art'), 800);
     }
 
     async function generate() {
-        const credits = getCredits();
-        if (credits <= 0) return;
-        const prompt = document.getElementById('prompt-input').value;
-        const model = document.getElementById('model-select').value;
-        if (!prompt) { alert("Поле пустое!"); return; }
+        const c = getCredits(); if(c<=0) return;
+        const pr = document.getElementById('prompt-input').value;
+        const md = document.getElementById('model-select').value;
+        if(!pr) return alert("Поле пустое!");
 
-        localStorage.setItem('alex_credits', credits - 1); updateUI();
+        localStorage.setItem('alex_credits', c-1); updateUI();
         if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
         const btn = document.getElementById('gen-btn');
-        const resArea = document.getElementById('result-area');
-        const promo = document.getElementById('promo-box');
+        const res = document.getElementById('result-area');
+        btn.disabled = true; btn.innerText = "🔮 КОЛДУЕМ...";
+        res.innerHTML = '<div class="loader"></div>';
 
-        btn.disabled = true; btn.innerText = "🔮 ГЕНЕРАЦИЯ..."; promo.style.display = 'none';
-        resArea.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+        const s = Math.floor(Math.random()*1e6);
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(pr)}?model=${md}&width=1024&height=1024&seed=${s}&nologo=true`;
 
-        const seed = Math.floor(Math.random() * 1000000);
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=${model}&width=1024&height=1024&seed=${seed}&nologo=true`;
-
-        const img = new Image(); img.crossOrigin = "Anonymous"; img.className = "generated-img"; img.src = url;
-        img.onload = () => {
-            resArea.innerHTML = ''; resArea.appendChild(img);
-            btn.disabled = false; btn.innerText = "🚀 ЕЩЕ РАЗ";
-            promo.style.display = 'block';
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            promo.scrollIntoView({behavior: "smooth"});
-        };
-        img.onerror = () => {
-            resArea.innerHTML = '<div style="color:#FF0055; padding:20px;">Ошибка.</div>';
-            btn.disabled = false; btn.innerText = "ПОВТОРИТЬ";
-            localStorage.setItem('alex_credits', credits); updateUI();
-        };
+        const img = new Image(); img.src = url; img.className='generated-img';
+        img.onload = () => { res.innerHTML=''; res.appendChild(img); btn.disabled=false; btn.innerText="ЗАПУСТИТЬ МАГИЮ"; if(tg.HapticFeedback)tg.HapticFeedback.notificationOccurred('success'); };
+        img.onerror = () => { res.innerText="Ошибка. Попробуй ещё раз."; btn.disabled=false; localStorage.setItem('alex_credits', c); updateUI(); };
     }
 
-    function shareToUnlock() {
-        const shareText = "🔥 Бесплатный AI генератор ALEX:LAB! Залетай:";
-        const url = `https://t.me/share/url?url=${TG_BOT_LINK}&text=${encodeURIComponent(shareText)}`;
-        tg.openTelegramLink(url);
-        setTimeout(() => { localStorage.setItem('alex_credits', MAX_CREDITS + REWARD); updateUI(); alert("🔋 ЗАРЯЖЕНО!"); }, 8000);
+    function share() {
+        const t = "🔥 Нашел бесплатный генератор ALEX:LAB! Безлимит. Залетай:";
+        tg.openTelegramLink(`https://t.me/share/url?url=${TG_BOT}&text=${encodeURIComponent(t)}`);
+        setTimeout(() => { localStorage.setItem('alex_credits', 10); updateUI(); alert("🔋 СИСТЕМА ЗАРЯЖЕНА! (+5)"); }, 8000);
     }
     updateUI();
 </script>
